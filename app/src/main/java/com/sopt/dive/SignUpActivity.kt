@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -110,8 +113,10 @@ private fun SignUpScreen(
         modifier = modifier
             .fillMaxSize()
             .background(color = Color(0xFFFAFAFA))
-            .padding(16.dp)
-            .navigationBarsPadding(),
+            .imePadding()
+            .navigationBarsPadding()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Sign Up", fontSize = 32.sp)
@@ -150,7 +155,7 @@ private fun SignUpScreen(
             value = mbti,
             onValueChange = onMbtiChange,
             placeholder = "MBTI를 입력해주세요",
-            imeAction = ImeAction.Done,
+            imeAction = ImeAction.Default,
             onNext = onButtonClick,
             modifier = Modifier.focusRequester(focusRequesterMbti)
         )

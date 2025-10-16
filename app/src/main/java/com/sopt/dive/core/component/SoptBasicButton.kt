@@ -27,7 +27,7 @@ fun SoptBasicButton(
             .clip(RoundedCornerShape(8.dp))
             .background(color = Color.Black)
             .noRippleClickable(onClick = onClick)
-            .padding(20.dp),
+            .padding(14.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = title, color = Color.White)
