@@ -2,6 +2,7 @@ package com.sopt.dive.core.component.textfield
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -15,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -29,7 +31,9 @@ fun SoptPasswordTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     maxLines: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    imeAction: ImeAction = ImeAction.Default,
+    onDone: () -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -45,12 +49,18 @@ fun SoptPasswordTextField(
         ),
         placeholder = { Text(text = placeholder) },
         maxLines = maxLines,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = imeAction
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { onDone() }
+        ),
         visualTransformation = if (passwordVisible) {
             VisualTransformation.None
         } else {
             PasswordVisualTransformation()
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
             Icon(
                 painter = painterResource(
@@ -81,7 +91,9 @@ private fun SoptPasswordTextFieldPreview() {
             value = password,
             onValueChange = { password = it },
             placeholder = "비밀번호",
-            maxLines = 1
+            maxLines = 1,
+            imeAction = ImeAction.Next,
+            onDone = {}
         )
     }
 }

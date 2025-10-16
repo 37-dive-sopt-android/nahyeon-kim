@@ -19,13 +19,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.component.item.InputItem
 import com.sopt.dive.core.component.SoptBasicButton
+import com.sopt.dive.core.component.item.InputItem
 import com.sopt.dive.core.component.item.TextFieldType
 import com.sopt.dive.core.extension.noRippleClickable
 import com.sopt.dive.ui.theme.DiveTheme
@@ -110,6 +113,8 @@ private fun SignInScreen(
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusRequesterPassword = remember { FocusRequester() }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -126,7 +131,8 @@ private fun SignInScreen(
             label = "ID",
             value = id,
             onValueChange = onIdChange,
-            placeholder = "아이디를 입력해주세요"
+            placeholder = "아이디를 입력해주세요",
+            onNext = { focusRequesterPassword.requestFocus() }
         )
 
         InputItem(
@@ -134,7 +140,10 @@ private fun SignInScreen(
             value = password,
             onValueChange = onPasswordChange,
             placeholder = "비밀번호를 입력해주세요",
-            type = TextFieldType.Password
+            type = TextFieldType.Password,
+            imeAction = ImeAction.Done,
+            onNext = onButtonClick,
+            modifier = Modifier.focusRequester(focusRequesterPassword)
         )
 
         Spacer(modifier = Modifier.weight(1f))

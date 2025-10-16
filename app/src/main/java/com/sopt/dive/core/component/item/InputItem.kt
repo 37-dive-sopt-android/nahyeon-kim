@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sopt.dive.core.component.textfield.SoptBasicTextField
@@ -23,7 +24,9 @@ fun InputItem(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
-    type: TextFieldType = TextFieldType.Basic
+    type: TextFieldType = TextFieldType.Basic,
+    imeAction: ImeAction = ImeAction.Next,
+    onNext: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -42,7 +45,9 @@ fun InputItem(
                     value = value,
                     onValueChange = onValueChange,
                     placeholder = placeholder,
-                    maxLines = 1
+                    maxLines = 1,
+                    imeAction = imeAction,
+                    onDone = onNext
                 )
             }
             TextFieldType.Password -> {
@@ -50,7 +55,9 @@ fun InputItem(
                     value = value,
                     onValueChange = onValueChange,
                     placeholder = placeholder,
-                    maxLines = 1
+                    maxLines = 1,
+                    imeAction = imeAction,
+                    onDone = onNext
                 )
             }
         }

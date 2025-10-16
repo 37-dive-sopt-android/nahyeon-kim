@@ -18,13 +18,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.component.item.InputItem
 import com.sopt.dive.core.component.SoptBasicButton
+import com.sopt.dive.core.component.item.InputItem
 import com.sopt.dive.core.component.item.TextFieldType
 import com.sopt.dive.core.extension.soptValidator
 import com.sopt.dive.ui.theme.DiveTheme
@@ -99,6 +102,10 @@ private fun SignUpScreen(
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusRequesterPassword = remember { FocusRequester() }
+    val focusRequesterNickname = remember { FocusRequester() }
+    val focusRequesterMbti = remember { FocusRequester() }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -115,7 +122,8 @@ private fun SignUpScreen(
             label = "ID",
             value = id,
             onValueChange = onIdChange,
-            placeholder = "아이디를 입력해주세요"
+            placeholder = "아이디를 입력해주세요",
+            onNext = { focusRequesterPassword.requestFocus() }
         )
 
         InputItem(
@@ -123,21 +131,28 @@ private fun SignUpScreen(
             value = password,
             onValueChange = onPasswordChange,
             placeholder = "비밀번호를 입력해주세요",
-            type = TextFieldType.Password
+            type = TextFieldType.Password,
+            onNext = { focusRequesterNickname.requestFocus() },
+            modifier = Modifier.focusRequester(focusRequesterPassword)
         )
 
         InputItem(
             label = "Nickname",
             value = nickname,
             onValueChange = onNicknameChange,
-            placeholder = "닉네임을 입력해주세요"
+            placeholder = "닉네임을 입력해주세요",
+            onNext = { focusRequesterMbti.requestFocus() },
+            modifier = Modifier.focusRequester(focusRequesterNickname)
         )
 
         InputItem(
             label = "MBTI",
             value = mbti,
             onValueChange = onMbtiChange,
-            placeholder = "MBTI를 입력해주세요"
+            placeholder = "MBTI를 입력해주세요",
+            imeAction = ImeAction.Done,
+            onNext = onButtonClick,
+            modifier = Modifier.focusRequester(focusRequesterMbti)
         )
 
         Spacer(modifier = Modifier.weight(1f))
