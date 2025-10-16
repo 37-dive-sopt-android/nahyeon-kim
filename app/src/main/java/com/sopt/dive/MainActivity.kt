@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sopt.dive.core.component.InfoItem
+import com.sopt.dive.core.component.item.InfoItem
 import com.sopt.dive.ui.theme.DiveTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,10 +29,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             DiveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    /*Greeting(
-                        name = "Android",
+                    MainScreen(
+                        id = intent.getStringExtra("id") ?: "",
+                        password = intent.getStringExtra("password") ?: "",
+                        nickname = intent.getStringExtra("nickname") ?: "",
+                        mbti = intent.getStringExtra("mbti") ?: "",
                         modifier = Modifier.padding(innerPadding)
-                    )*/
+                    )
                 }
             }
         }
@@ -40,15 +43,16 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MainScreen(
+fun MainScreen(
     id: String,
     password: String,
     nickname: String,
     mbti: String,
     modifier: Modifier = Modifier
-){
+) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
             .background(color = Color(0xFFFAFAFA))
             .padding(16.dp)
             .padding(top = 34.dp)
