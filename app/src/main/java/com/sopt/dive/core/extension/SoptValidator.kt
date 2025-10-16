@@ -1,16 +1,16 @@
 package com.sopt.dive.core.extension
 
-import androidx.compose.material3.SnackbarHostState
+import android.content.Context
+import android.widget.Toast
 
-suspend fun soptValidator(
-    snackbarHostState: SnackbarHostState,
+fun soptValidator(
+    context: Context,
     idText: String,
     passwordText: String,
     nicknameText: String,
     mbtiText: String
 ): Boolean {
     val errorMessage = when {
-
         idText.isBlank() -> "아이디를 입력해주세요"
         idText.length !in 6..10 -> "아이디는 6~10자리로 입력해주세요"
 
@@ -25,7 +25,7 @@ suspend fun soptValidator(
     }
 
     return if (errorMessage != null) {
-        snackbarHostState.showSnackbar(errorMessage)
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         false
     } else {
         true
