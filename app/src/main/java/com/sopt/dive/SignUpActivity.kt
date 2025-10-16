@@ -1,5 +1,10 @@
 package com.sopt.dive
 
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,15 +14,77 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.component.InputItem
+import com.sopt.dive.core.component.item.InputItem
 import com.sopt.dive.core.component.SoptBasicButton
+import com.sopt.dive.core.component.item.TextFieldType
+import com.sopt.dive.core.extension.soptValidator
 import com.sopt.dive.ui.theme.DiveTheme
+
+class SignUpActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            DiveTheme {
+                SingUpRoute(
+                    onSignUpClick = { id, password, nickname, mbti ->
+                        Toast.makeText(this@SignUpActivity, "회원가입이 완료되었습니다", Toast.LENGTH_SHORT).show()
+                        val intent = Intent().apply {
+                            putExtra("id", id)
+                            putExtra("password", password)
+                            putExtra("nickname", nickname)
+                            putExtra("mbti", mbti)
+                        }
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SingUpRoute(
+    onSignUpClick: (String, String, String, String) -> Unit
+) {
+    val (id, setId) = remember { mutableStateOf("") }
+    val (password, setPassword) = remember { mutableStateOf("") }
+    val (nickname, setNickname) = remember { mutableStateOf("") }
+    val (mbti, setMbti) = remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    SignUpScreen(
+        id = id,
+        password = password,
+        nickname = nickname,
+        mbti = mbti,
+        onIdChange = setId,
+        onPasswordChange = setPassword,
+        onNicknameChange = setNickname,
+        onMbtiChange = setMbti,
+        onButtonClick = {
+            val isValid = soptValidator(
+                context = context,
+                idText = id,
+                passwordText = password,
+                nicknameText = nickname,
+                mbtiText = mbti
+            )
+            if (isValid) {
+                onSignUpClick(id, password, nickname, mbti)
+            }
+        }
+    )
+}
 
 @Composable
 private fun SignUpScreen(
@@ -33,7 +100,8 @@ private fun SignUpScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
             .background(color = Color(0xFFFAFAFA))
             .padding(16.dp)
             .navigationBarsPadding(),
@@ -55,7 +123,7 @@ private fun SignUpScreen(
             value = password,
             onValueChange = onPasswordChange,
             placeholder = "비밀번호를 입력해주세요",
-            isPassword = true
+            type = TextFieldType.Password
         )
 
         InputItem(
@@ -70,7 +138,6 @@ private fun SignUpScreen(
             value = mbti,
             onValueChange = onMbtiChange,
             placeholder = "MBTI를 입력해주세요"
-
         )
 
         Spacer(modifier = Modifier.weight(1f))
