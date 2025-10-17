@@ -1,6 +1,5 @@
 package com.sopt.dive
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -33,24 +32,26 @@ import androidx.compose.ui.unit.sp
 import com.sopt.dive.core.component.SoptBasicButton
 import com.sopt.dive.core.component.item.InputItem
 import com.sopt.dive.core.component.item.TextFieldType
-import com.sopt.dive.core.extension.soptValidator
+import com.sopt.dive.core.extension.validateSignUp
+import com.sopt.dive.data.UserPreferences
 import com.sopt.dive.ui.theme.DiveTheme
 
 class SignUpActivity : ComponentActivity() {
+    private lateinit var userPrefs: UserPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        userPrefs = UserPreferences(this)
+
         setContent {
             DiveTheme {
                 SingUpRoute(
                     onSignUpClick = { id, password, nickname, mbti ->
+                        userPrefs.registerUser(id, password, nickname, mbti)
+
                         Toast.makeText(this@SignUpActivity, "회원가입이 완료되었습니다", Toast.LENGTH_SHORT).show()
-                        val intent = Intent().apply {
-                            putExtra("id", id)
-                            putExtra("password", password)
-                            putExtra("nickname", nickname)
-                            putExtra("mbti", mbti)
-                        }
-                        setResult(RESULT_OK, intent)
+                        setResult(RESULT_OK)
                         finish()
                     }
                 )
@@ -79,7 +80,7 @@ fun SingUpRoute(
         onNicknameChange = setNickname,
         onMbtiChange = setMbti,
         onButtonClick = {
-            val isValid = soptValidator(
+            val isValid = validateSignUp(
                 context = context,
                 idText = id,
                 passwordText = password,

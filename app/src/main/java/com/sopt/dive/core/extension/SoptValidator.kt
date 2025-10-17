@@ -3,7 +3,7 @@ package com.sopt.dive.core.extension
 import android.content.Context
 import android.widget.Toast
 
-fun soptValidator(
+fun validateSignUp(
     context: Context,
     idText: String,
     passwordText: String,
@@ -21,6 +21,25 @@ fun soptValidator(
 
         mbtiText.isBlank() -> "MBTI를 입력해주세요"
 
+        else -> null
+    }
+
+    return if (errorMessage != null) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        false
+    } else {
+        true
+    }
+}
+
+fun validateSignIn(
+    context: Context,
+    idText: String,
+    passwordText: String
+): Boolean {
+    val errorMessage = when {
+        idText.isBlank() -> "아이디를 입력해주세요"
+        passwordText.isBlank() -> "비밀번호를 입력해주세요"
         else -> null
     }
 

@@ -1,5 +1,6 @@
 package com.sopt.dive
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -20,35 +22,60 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sopt.dive.core.component.SoptBasicButton
 import com.sopt.dive.core.component.item.InfoItem
+import com.sopt.dive.data.UserInfo
+import com.sopt.dive.data.UserPreferences
 import com.sopt.dive.ui.theme.DiveTheme
 
 class MainActivity : ComponentActivity() {
+    private lateinit var userPrefs: UserPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        userPrefs = UserPreferences(this)
+
+        if (!userPrefs.isSignedIn()) {
+            navigateToSignIn()
+            return
+        }
+
+        val userInfo = userPrefs.getUserInfo()
+
         setContent {
             DiveTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MainScreen(
-                        id = intent.getStringExtra("id") ?: "",
-                        password = intent.getStringExtra("password") ?: "",
-                        nickname = intent.getStringExtra("nickname") ?: "",
-                        mbti = intent.getStringExtra("mbti") ?: "",
+                        userInfo = userInfo,
+                        onLogout = {
+                            handleLogout()
+                        },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
     }
+
+    private fun handleLogout() {
+        userPrefs.signOut()
+        navigateToSignIn()
+    }
+
+    private fun navigateToSignIn() {
+        val intent = Intent(this, SignInActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
 }
 
 @Composable
 fun MainScreen(
-    id: String,
-    password: String,
-    nickname: String,
-    mbti: String,
+    userInfo: UserInfo,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -70,19 +97,29 @@ fun MainScreen(
 
         InfoItem(
             label = "ID",
-            value = id
+            value = userInfo.id
         )
+
         InfoItem(
             label = "Password",
-            value = password
+            value = userInfo.password
         )
+
         InfoItem(
             label = "Nickname",
-            value = nickname
+            value = userInfo.nickname
         )
+
         InfoItem(
             label = "MBTI",
-            value = mbti
+            value = userInfo.mbti
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        SoptBasicButton(
+            title = "로그아웃",
+            onClick = onLogout
         )
     }
 }
@@ -92,10 +129,13 @@ fun MainScreen(
 private fun MainScreenPreview() {
     DiveTheme {
         MainScreen(
-            id = "testUser",
-            password = "1234",
-            nickname = "테스트",
-            mbti = "ISTJ"
+            userInfo = UserInfo(
+                id = "testUser",
+                password = "1234",
+                nickname = "테스트",
+                mbti = "ISTJ"
+            ),
+            onLogout = {}
         )
     }
 }

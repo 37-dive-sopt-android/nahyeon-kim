@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,8 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -33,57 +34,57 @@ import com.sopt.dive.core.component.SoptBasicButton
 import com.sopt.dive.core.component.item.InputItem
 import com.sopt.dive.core.component.item.TextFieldType
 import com.sopt.dive.core.extension.noRippleClickable
+import com.sopt.dive.core.extension.validateSignIn
+import com.sopt.dive.data.UserPreferences
 import com.sopt.dive.ui.theme.DiveTheme
 
 class SignInActivity : ComponentActivity() {
-    private var registeredId: String = ""
-    private var registeredPassword: String = ""
-    private var registeredNickname: String = ""
-    private var registeredMbti: String = ""
-
-    private val signUpLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            registeredId = data?.getStringExtra("id") ?: ""
-            registeredPassword = data?.getStringExtra("password") ?: ""
-            registeredNickname = data?.getStringExtra("nickname") ?: ""
-            registeredMbti = data?.getStringExtra("mbti") ?: ""
-        }
-    }
+    private lateinit var userPrefs: UserPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        userPrefs = UserPreferences(this)
+
+        if (userPrefs.isSignedIn()) {
+            navigateToMain()
+            return
+        }
+
         setContent {
             DiveTheme {
                 SignInRoute(
                     onSignUpClick = {
-                        val intent = Intent(this@SignInActivity, SignUpActivity::class.java)
-                        signUpLauncher.launch(intent)
+                        startActivity(Intent(this@SignInActivity, SignUpActivity::class.java))
                     },
                     onSignInClick = { id, password ->
-                        if (registeredId.isEmpty()) {
-                            Toast.makeText(this@SignInActivity, "회원가입을 먼저 진행해주세요", Toast.LENGTH_SHORT).show()
-                            return@SignInRoute
-                        }
-
-                        if (id == registeredId && password == registeredPassword) {
-                            Toast.makeText(this@SignInActivity, "로그인에 성공했습니다", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@SignInActivity, MainActivity::class.java).apply {
-                                putExtra("id", id)
-                                putExtra("password", password)
-                                putExtra("nickname", registeredNickname)
-                                putExtra("mbti", registeredMbti)
-                            }
-                            startActivity(intent)
-                        } else {
-                            Toast.makeText(this@SignInActivity, "아이디 또는 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
-                        }
+                        handleSignIn(id, password)
                     }
                 )
             }
         }
+    }
+
+    private fun handleSignIn(id: String, password: String) {
+        if (!validateSignIn(this, id, password)) {
+            return
+        }
+
+        val loginSuccess = userPrefs.signIn(id, password)
+
+        if (loginSuccess) {
+            Toast.makeText(this, "로그인에 성공했습니다", Toast.LENGTH_SHORT).show()
+            navigateToMain()
+        } else {
+            Toast.makeText(this, "아이디 또는 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateToMain() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }
 
@@ -92,14 +93,14 @@ fun SignInRoute(
     onSignUpClick: () -> Unit,
     onSignInClick: (String, String) -> Unit
 ) {
-    val (id, setId) = remember { mutableStateOf("") }
-    val (password, setPassword) = remember { mutableStateOf("") }
+    var id by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     SignInScreen(
         id = id,
         password = password,
-        onIdChange = setId,
-        onPasswordChange = setPassword,
+        onIdChange = { id = it },
+        onPasswordChange = { password = it },
         onTextClick = onSignUpClick,
         onButtonClick = { onSignInClick(id, password) }
     )
