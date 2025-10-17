@@ -1,4 +1,4 @@
-package com.sopt.dive.core.component
+package com.sopt.dive.core.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.core.extension.noRippleClickable
-import com.sopt.dive.ui.theme.DiveTheme
+import com.sopt.dive.core.designsystem.theme.DiveTheme
 
 @Composable
 fun SoptBasicButton(

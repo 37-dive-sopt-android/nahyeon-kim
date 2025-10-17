@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Dive"
         tools:targetApi="31">
         <activity
-            android:name=".SignInActivity"
+            android:name=".presentation.signin.SignInActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Dive">
@@ -25,13 +25,13 @@
         </activity>
 
         <activity
-            android:name=".SignUpActivity"
+            android:name=".presentation.signup.SignUpActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Dive" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Dive" />

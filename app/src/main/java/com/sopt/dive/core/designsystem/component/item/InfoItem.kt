@@ -1,4 +1,4 @@
-package com.sopt.dive.core.component.item
+package com.sopt.dive.core.designsystem.component.item
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

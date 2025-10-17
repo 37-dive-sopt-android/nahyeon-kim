@@ -1,4 +1,4 @@
-package com.sopt.dive
+package com.sopt.dive.presentation.signin
 
 import android.content.Intent
 import android.os.Bundle
@@ -30,13 +30,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.component.SoptBasicButton
-import com.sopt.dive.core.component.item.InputItem
-import com.sopt.dive.core.component.item.TextFieldType
+import com.sopt.dive.presentation.signup.SignUpActivity
+import com.sopt.dive.core.designsystem.component.SoptBasicButton
+import com.sopt.dive.core.designsystem.component.item.InputItem
+import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.extension.noRippleClickable
-import com.sopt.dive.core.extension.validateSignIn
-import com.sopt.dive.data.UserPreferences
-import com.sopt.dive.ui.theme.DiveTheme
+import com.sopt.dive.core.util.validateSignIn
+import com.sopt.dive.core.data.UserPreferences
+import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.presentation.main.MainActivity
 
 class SignInActivity : ComponentActivity() {
     private lateinit var userPrefs: UserPreferences

@@ -1,4 +1,4 @@
-package com.sopt.dive
+package com.sopt.dive.presentation.signup
 
 import android.os.Bundle
 import android.widget.Toast
@@ -29,12 +29,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.component.SoptBasicButton
-import com.sopt.dive.core.component.item.InputItem
-import com.sopt.dive.core.component.item.TextFieldType
-import com.sopt.dive.core.extension.validateSignUp
-import com.sopt.dive.data.UserPreferences
-import com.sopt.dive.ui.theme.DiveTheme
+import com.sopt.dive.core.designsystem.component.SoptBasicButton
+import com.sopt.dive.core.designsystem.component.item.InputItem
+import com.sopt.dive.core.designsystem.component.item.TextFieldType
+import com.sopt.dive.core.util.validateSignUp
+import com.sopt.dive.core.data.UserPreferences
+import com.sopt.dive.core.designsystem.theme.DiveTheme
 
 class SignUpActivity : ComponentActivity() {
     private lateinit var userPrefs: UserPreferences

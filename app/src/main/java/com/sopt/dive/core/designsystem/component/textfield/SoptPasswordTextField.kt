@@ -1,5 +1,6 @@
-package com.sopt.dive.core.component.textfield
+package com.sopt.dive.core.designsystem.component.textfield
 
+import android.R
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,7 +24,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.core.extension.noRippleClickable
-import com.sopt.dive.ui.theme.DiveTheme
+import com.sopt.dive.core.designsystem.theme.DiveTheme
 
 @Composable
 fun SoptPasswordTextField(
@@ -65,9 +66,9 @@ fun SoptPasswordTextField(
             Icon(
                 painter = painterResource(
                     id = if (passwordVisible) {
-                        android.R.drawable.ic_menu_view
+                        R.drawable.ic_menu_view
                     } else {
-                        android.R.drawable.ic_secure
+                        R.drawable.ic_secure
                     }
                 ),
                 contentDescription = if (passwordVisible) "비밀번호 숨기기" else "비밀번호 보기",

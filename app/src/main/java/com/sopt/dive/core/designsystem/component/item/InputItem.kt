@@ -1,4 +1,4 @@
-package com.sopt.dive.core.component.item
+package com.sopt.dive.core.designsystem.component.item
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.component.textfield.SoptBasicTextField
-import com.sopt.dive.core.component.textfield.SoptPasswordTextField
+import com.sopt.dive.core.designsystem.component.textfield.SoptBasicTextField
+import com.sopt.dive.core.designsystem.component.textfield.SoptPasswordTextField
 
 sealed class TextFieldType {
     object Basic : TextFieldType()

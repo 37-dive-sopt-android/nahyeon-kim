@@ -1,4 +1,4 @@
-package com.sopt.dive.core.extension
+package com.sopt.dive.core.util
 
 import android.content.Context
 import android.widget.Toast

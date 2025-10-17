@@ -1,4 +1,4 @@
-package com.sopt.dive
+package com.sopt.dive.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,11 +22,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sopt.dive.core.component.SoptBasicButton
-import com.sopt.dive.core.component.item.InfoItem
-import com.sopt.dive.data.UserInfo
-import com.sopt.dive.data.UserPreferences
-import com.sopt.dive.ui.theme.DiveTheme
+import com.sopt.dive.R
+import com.sopt.dive.presentation.signin.SignInActivity
+import com.sopt.dive.core.designsystem.component.SoptBasicButton
+import com.sopt.dive.core.designsystem.component.item.InfoItem
+import com.sopt.dive.core.data.UserInfo
+import com.sopt.dive.core.data.UserPreferences
+import com.sopt.dive.core.designsystem.theme.DiveTheme
 
 class MainActivity : ComponentActivity() {
     private lateinit var userPrefs: UserPreferences

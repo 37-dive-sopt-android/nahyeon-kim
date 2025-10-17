@@ -1,4 +1,4 @@
-package com.sopt.dive.core.component.textfield
+package com.sopt.dive.core.designsystem.component.textfield
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
