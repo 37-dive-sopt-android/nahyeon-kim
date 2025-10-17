@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -113,9 +114,10 @@ private fun SignUpScreen(
         modifier = modifier
             .fillMaxSize()
             .background(color = Color(0xFFFAFAFA))
-            .imePadding()
-            .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
+            .imePadding()
+            .systemBarsPadding()
+            .navigationBarsPadding()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
