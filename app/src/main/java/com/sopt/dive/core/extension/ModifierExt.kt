@@ -22,11 +22,3 @@ inline fun Modifier.noRippleClickable(
         enabled = enabled
     )
 }
-
-fun Modifier.addFocusCleaner(focusManager: FocusManager): Modifier {
-    return this.pointerInput(Unit) {
-        detectTapGestures(
-            onTap = { focusManager.clearFocus() }
-        )
-    }
-}

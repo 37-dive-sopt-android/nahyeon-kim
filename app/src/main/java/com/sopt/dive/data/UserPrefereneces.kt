@@ -65,7 +65,4 @@ class UserPreferences(context: Context) {
         }
     }
 
-    fun clearUserInfo() {
-        prefs.edit { clear() }
-    }
 }
