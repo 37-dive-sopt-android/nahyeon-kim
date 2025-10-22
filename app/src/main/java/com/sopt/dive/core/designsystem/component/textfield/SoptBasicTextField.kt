@@ -1,6 +1,5 @@
 package com.sopt.dive.core.designsystem.component.textfield
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
@@ -23,8 +22,8 @@ fun SoptBasicTextField(
     placeholder: String,
     maxLines: Int,
     modifier: Modifier = Modifier,
-    imeAction: ImeAction = ImeAction.Default,
-    onDone: () -> Unit
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     TextField(
         value = value,
@@ -38,13 +37,9 @@ fun SoptBasicTextField(
         ),
         placeholder = { Text(text = placeholder) },
         maxLines = maxLines,
-        keyboardOptions = KeyboardOptions(
-            imeAction = imeAction
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = { onDone() }
-        ),
-        modifier = modifier.fillMaxWidth()
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        modifier = modifier
     )
 }
 
@@ -59,8 +54,8 @@ private fun SoptTextFieldsCollectionPreview() {
         onValueChange = { username = it },
         placeholder = "아이디",
         maxLines = 1,
-        imeAction = ImeAction.Next,
-        onDone = {}
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(onNext = {})
     )
 
     SoptBasicTextField(
@@ -68,7 +63,7 @@ private fun SoptTextFieldsCollectionPreview() {
         onValueChange = { password = it },
         placeholder = "비밀번호",
         maxLines = 1,
-        imeAction = ImeAction.Done,
-        onDone = {}
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {})
     )
 }

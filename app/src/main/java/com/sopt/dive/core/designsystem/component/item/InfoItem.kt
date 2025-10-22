@@ -19,7 +19,6 @@ fun InfoItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 12.dp)
     ) {
         Text(
             text = label,

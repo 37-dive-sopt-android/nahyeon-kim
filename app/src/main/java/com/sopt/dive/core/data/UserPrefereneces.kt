@@ -5,10 +5,10 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 
 data class UserInfo(
-    val id: String = "",
-    val password: String = "",
-    val nickname: String = "",
-    val mbti: String = ""
+    val id: String,
+    val password: String,
+    val nickname: String,
+    val mbti: String
 )
 
 class UserPreferences(context: Context) {
@@ -50,10 +50,10 @@ class UserPreferences(context: Context) {
 
     fun getUserInfo(): UserInfo {
         return UserInfo(
-            id = prefs.getString(KEY_ID, "") ?: "",
-            password = prefs.getString(KEY_PASSWORD, "") ?: "",
-            nickname = prefs.getString(KEY_NICKNAME, "") ?: "",
-            mbti = prefs.getString(KEY_MBTI, "") ?: ""
+            id = prefs.getString(KEY_ID, "").orEmpty(),
+            password = prefs.getString(KEY_PASSWORD, "").orEmpty(),
+            nickname = prefs.getString(KEY_NICKNAME, "").orEmpty(),
+            mbti = prefs.getString(KEY_MBTI, "").orEmpty()
         )
     }
 
@@ -64,5 +64,4 @@ class UserPreferences(context: Context) {
             putBoolean(KEY_IS_LOGGED_IN, false)
         }
     }
-
 }

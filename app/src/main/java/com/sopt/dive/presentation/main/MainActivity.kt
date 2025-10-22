@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -97,25 +98,29 @@ fun MainScreen(
 
         Text("김나현")
 
-        InfoItem(
-            label = "ID",
-            value = userInfo.id
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            InfoItem(
+                label = "ID",
+                value = userInfo.id
+            )
 
-        InfoItem(
-            label = "Password",
-            value = userInfo.password
-        )
+            InfoItem(
+                label = "Password",
+                value = userInfo.password
+            )
 
-        InfoItem(
-            label = "Nickname",
-            value = userInfo.nickname
-        )
+            InfoItem(
+                label = "Nickname",
+                value = userInfo.nickname
+            )
 
-        InfoItem(
-            label = "MBTI",
-            value = userInfo.mbti
-        )
+            InfoItem(
+                label = "MBTI",
+                value = userInfo.mbti
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 

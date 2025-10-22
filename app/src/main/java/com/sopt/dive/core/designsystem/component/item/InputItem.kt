@@ -3,10 +3,11 @@ package com.sopt.dive.core.designsystem.component.item
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sopt.dive.core.designsystem.component.textfield.SoptBasicTextField
@@ -25,8 +26,8 @@ fun InputItem(
     placeholder: String,
     modifier: Modifier = Modifier,
     type: TextFieldType = TextFieldType.Basic,
-    imeAction: ImeAction = ImeAction.Next,
-    onNext: () -> Unit
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     Column(
         modifier = modifier
@@ -46,8 +47,9 @@ fun InputItem(
                     onValueChange = onValueChange,
                     placeholder = placeholder,
                     maxLines = 1,
-                    imeAction = imeAction,
-                    onDone = onNext
+                    keyboardOptions = keyboardOptions,
+                    keyboardActions = keyboardActions,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             TextFieldType.Password -> {
@@ -56,8 +58,9 @@ fun InputItem(
                     onValueChange = onValueChange,
                     placeholder = placeholder,
                     maxLines = 1,
-                    imeAction = imeAction,
-                    onDone = onNext
+                    keyboardOptions = keyboardOptions,
+                    keyboardActions = keyboardActions,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

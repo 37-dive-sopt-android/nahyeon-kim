@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,20 +23,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
-import com.sopt.dive.core.util.validateSignUp
-import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.core.util.validateSignUp
 
 class SignUpActivity : ComponentActivity() {
     private lateinit var userPrefs: UserPreferences
@@ -107,9 +109,7 @@ private fun SignUpScreen(
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val focusRequesterPassword = remember { FocusRequester() }
-    val focusRequesterNickname = remember { FocusRequester() }
-    val focusRequesterMbti = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = modifier
@@ -131,7 +131,10 @@ private fun SignUpScreen(
             value = id,
             onValueChange = onIdChange,
             placeholder = "아이디를 입력해주세요",
-            onNext = { focusRequesterPassword.requestFocus() }
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
         )
 
         InputItem(
@@ -140,8 +143,10 @@ private fun SignUpScreen(
             onValueChange = onPasswordChange,
             placeholder = "비밀번호를 입력해주세요",
             type = TextFieldType.Password,
-            onNext = { focusRequesterNickname.requestFocus() },
-            modifier = Modifier.focusRequester(focusRequesterPassword)
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
         )
 
         InputItem(
@@ -149,8 +154,10 @@ private fun SignUpScreen(
             value = nickname,
             onValueChange = onNicknameChange,
             placeholder = "닉네임을 입력해주세요",
-            onNext = { focusRequesterMbti.requestFocus() },
-            modifier = Modifier.focusRequester(focusRequesterNickname)
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
         )
 
         InputItem(
@@ -158,9 +165,10 @@ private fun SignUpScreen(
             value = mbti,
             onValueChange = onMbtiChange,
             placeholder = "MBTI를 입력해주세요",
-            imeAction = ImeAction.Default,
-            onNext = onButtonClick,
-            modifier = Modifier.focusRequester(focusRequesterMbti)
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            )
         )
 
         Spacer(modifier = Modifier.weight(1f))
