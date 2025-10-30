@@ -1,12 +1,9 @@
 package com.sopt.dive.presentation.signin
 
-import android.content.Intent
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -26,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
@@ -39,66 +37,17 @@ import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extension.noRippleClickable
 import com.sopt.dive.core.util.validateSignIn
-import com.sopt.dive.presentation.main.MainActivity
-import com.sopt.dive.presentation.signup.SignUpActivity
-
-class SignInActivity : ComponentActivity() {
-    private lateinit var userPrefs: UserPreferences
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        userPrefs = UserPreferences(this)
-
-        if (userPrefs.isSignedIn()) {
-            navigateToMain()
-            return
-        }
-
-        setContent {
-            DiveTheme {
-                SignInRoute(
-                    onSignUpClick = {
-                        startActivity(Intent(this@SignInActivity, SignUpActivity::class.java))
-                    },
-                    onSignInClick = { id, password ->
-                        handleSignIn(id, password)
-                    }
-                )
-            }
-        }
-    }
-
-    private fun handleSignIn(id: String, password: String) {
-        if (!validateSignIn(this, id, password)) {
-            return
-        }
-
-        val loginSuccess = userPrefs.signIn(id, password)
-
-        if (loginSuccess) {
-            Toast.makeText(this, "로그인에 성공했습니다", Toast.LENGTH_SHORT).show()
-            navigateToMain()
-        } else {
-            Toast.makeText(this, "아이디 또는 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
-    }
-}
 
 @Composable
 fun SignInRoute(
+    paddingValues: PaddingValues,
     onSignUpClick: () -> Unit,
-    onSignInClick: (String, String) -> Unit
+    onSignInSuccess: () -> Unit
 ) {
     var id by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
 
     SignInScreen(
         id = id,
@@ -106,7 +55,22 @@ fun SignInRoute(
         onIdChange = { id = it },
         onPasswordChange = { password = it },
         onTextClick = onSignUpClick,
-        onButtonClick = { onSignInClick(id, password) }
+        onButtonClick = {
+            if (!validateSignIn(context, id, password)) {
+                return@SignInScreen
+            }
+
+            val loginSuccess = userPrefs.signIn(id, password)
+
+            if (loginSuccess) {
+                Toast.makeText(context, "로그인에 성공했습니다", Toast.LENGTH_SHORT).show()
+                onSignInSuccess()
+            } else {
+                Toast.makeText(context, "아이디 또는 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
+            }
+        },
+        modifier = Modifier
+            .padding(paddingValues)
     )
 }
 

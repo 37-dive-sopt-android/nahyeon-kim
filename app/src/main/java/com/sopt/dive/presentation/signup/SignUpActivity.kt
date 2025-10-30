@@ -1,11 +1,9 @@
 package com.sopt.dive.presentation.signup
 
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -38,39 +36,17 @@ import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.util.validateSignUp
 
-class SignUpActivity : ComponentActivity() {
-    private lateinit var userPrefs: UserPreferences
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        userPrefs = UserPreferences(this)
-
-        setContent {
-            DiveTheme {
-                SingUpRoute(
-                    onSignUpClick = { id, password, nickname, mbti ->
-                        userPrefs.registerUser(id, password, nickname, mbti)
-
-                        Toast.makeText(this@SignUpActivity, "회원가입이 완료되었습니다", Toast.LENGTH_SHORT).show()
-                        setResult(RESULT_OK)
-                        finish()
-                    }
-                )
-            }
-        }
-    }
-}
-
 @Composable
-fun SingUpRoute(
-    onSignUpClick: (String, String, String, String) -> Unit
+fun SignUpRoute(
+    paddingValues: PaddingValues,
+    onSignUpSuccess: () -> Unit
 ) {
     val (id, setId) = remember { mutableStateOf("") }
     val (password, setPassword) = remember { mutableStateOf("") }
     val (nickname, setNickname) = remember { mutableStateOf("") }
     val (mbti, setMbti) = remember { mutableStateOf("") }
     val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
 
     SignUpScreen(
         id = id,
@@ -90,9 +66,13 @@ fun SingUpRoute(
                 mbtiText = mbti
             )
             if (isValid) {
-                onSignUpClick(id, password, nickname, mbti)
+                userPrefs.registerUser(id, password, nickname, mbti)
+                Toast.makeText(context, "회원가입이 완료되었습니다", Toast.LENGTH_SHORT).show()
+                onSignUpSuccess()
             }
-        }
+        },
+        modifier = Modifier
+            .padding(paddingValues)
     )
 }
 

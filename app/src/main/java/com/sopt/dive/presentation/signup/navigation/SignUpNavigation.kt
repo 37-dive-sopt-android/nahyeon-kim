@@ -1,35 +1,33 @@
-package com.sopt.dive.presentation.mypage.navigation
+package com.sopt.dive.presentation.signup.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.sopt.dive.core.navigation.MainTabRoute
-import com.sopt.dive.presentation.mypage.MyPageRoute
+import com.sopt.dive.presentation.signup.SignUpRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object MyPage : MainTabRoute
+data object SignUp
 
-fun NavController.navigateToMyPage(
+fun NavController.navigateToSignUp(
     navOptions: NavOptions? = null
 ) {
     navigate(
-        route = MyPage,
+        route = SignUp,
         navOptions = navOptions
     )
 }
 
-fun NavGraphBuilder.myPageNavGraph(
+fun NavGraphBuilder.signUpNavGraph(
     paddingValues: PaddingValues,
     navigateToSignIn: () -> Unit
 ) {
-    composable<MyPage> {
-        MyPageRoute(
+    composable<SignUp> {
+        SignUpRoute(
             paddingValues = paddingValues,
-            onLogout = navigateToSignIn
+            onSignUpSuccess = navigateToSignIn
         )
-
     }
 }

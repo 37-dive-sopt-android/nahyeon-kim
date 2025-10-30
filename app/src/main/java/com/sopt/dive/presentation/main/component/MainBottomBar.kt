@@ -36,7 +36,7 @@ import com.sopt.dive.presentation.main.MainTab
 fun MainBottomBar(
     visible: Boolean,
     tabs: List<MainTab>,
-    currentTab: MainTab,
+    currentTab: MainTab?,
     onTabSelected: (MainTab) -> Unit
 ) {
     AnimatedVisibility(
@@ -108,7 +108,7 @@ private fun BottomBarPreview() {
         Column(modifier = Modifier) {
             MainBottomBar(
                 visible = true,
-                tabs = MainTab.entries,
+                tabs = MainTab.entries.toList(),
                 currentTab = MainTab.HOME,
                 onTabSelected = {}
             )

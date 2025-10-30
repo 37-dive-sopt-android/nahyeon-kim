@@ -22,9 +22,19 @@ enum class MainTab(
         route = Search,
         label = "검색"
     ),
-    MYPAGE(
+    MY_PAGE(
         iconRes = R.drawable.ic_my,
         route = MyPage,
         label = "마이페이지"
-    )
+    );
+
+    companion object {
+        fun find(predicate: (MainTab) -> Boolean): MainTab? {
+            return entries.find(predicate)
+        }
+
+        fun contains(predicate: (MainTab) -> Boolean): Boolean {
+            return entries.any(predicate)
+        }
+    }
 }
