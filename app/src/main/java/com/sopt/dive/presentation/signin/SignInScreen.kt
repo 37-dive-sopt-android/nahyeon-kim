@@ -2,7 +2,6 @@ package com.sopt.dive.presentation.signin
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -34,7 +33,6 @@ import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
-import com.sopt.dive.core.extension.advancedImePadding
 import com.sopt.dive.core.extension.noRippleClickable
 import com.sopt.dive.core.util.handleSignIn
 

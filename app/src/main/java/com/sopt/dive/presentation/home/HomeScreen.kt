@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,20 +24,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.R
 import com.sopt.dive.core.data.UserInfo
-import com.sopt.dive.core.designsystem.component.item.ProfileActionType
-import com.sopt.dive.core.designsystem.component.item.ProfileBadge
-import com.sopt.dive.core.designsystem.component.item.ProfileDescription
-import com.sopt.dive.core.designsystem.component.item.ProfileItem
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extension.noRippleClickable
-
-@Immutable
-data class ProfileItemModel(
-    val badge: ProfileBadge,
-    val nickname: String,
-    val description: ProfileDescription,
-    val actionType: ProfileActionType
-)
+import com.sopt.dive.presentation.home.component.ProfileItem
+import com.sopt.dive.presentation.home.model.ProfileActionType
+import com.sopt.dive.presentation.home.model.ProfileBadge
+import com.sopt.dive.presentation.home.model.ProfileDescription
+import com.sopt.dive.presentation.home.model.ProfileItemModel
 
 @Composable
 fun HomeRoute(
