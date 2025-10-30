@@ -88,7 +88,8 @@ fun MainScreen(
             )
 
             homeNavGraph(
-                paddingValues = innerPadding
+                paddingValues = innerPadding,
+                navigateToProfile = appState::navigateToMyPage
             )
 
             searchNavGraph(

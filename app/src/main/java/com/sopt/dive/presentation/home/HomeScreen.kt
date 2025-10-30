@@ -1,22 +1,36 @@
 package com.sopt.dive.presentation.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sopt.dive.R
+import com.sopt.dive.core.data.UserInfo
 import com.sopt.dive.core.designsystem.component.item.ProfileActionType
 import com.sopt.dive.core.designsystem.component.item.ProfileBadge
 import com.sopt.dive.core.designsystem.component.item.ProfileDescription
 import com.sopt.dive.core.designsystem.component.item.ProfileItem
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.core.extension.noRippleClickable
 
 @Immutable
 data class ProfileItemModel(
@@ -28,7 +42,9 @@ data class ProfileItemModel(
 
 @Composable
 fun HomeRoute(
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    userInfo: UserInfo,
+    navigateToProfile: () -> Unit
 ) {
     // 더미 데이터
     val profileItems = listOf(
@@ -89,7 +105,9 @@ fun HomeRoute(
     )
 
     HomeScreen(
+        userInfo = userInfo,
         profileItems = profileItems,
+        navigateToProfile = navigateToProfile,
         modifier = Modifier
             .padding(paddingValues)
     )
@@ -98,7 +116,9 @@ fun HomeRoute(
 
 @Composable
 private fun HomeScreen(
+    userInfo: UserInfo,
     profileItems: List<ProfileItemModel>,
+    navigateToProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -107,6 +127,14 @@ private fun HomeScreen(
             .background(color = Color(0xFFFAFAFA)),
         contentPadding = PaddingValues(16.dp)
     ) {
+        item {
+            MyProfileSection(
+                userInfo = userInfo,
+                modifier = Modifier.padding(bottom = 16.dp),
+                navigateToProfile = navigateToProfile
+            )
+        }
+
         items(
             items = profileItems,
             key = { it.nickname }
@@ -123,10 +151,42 @@ private fun HomeScreen(
     }
 }
 
+@Composable
+private fun MyProfileSection(
+    userInfo: UserInfo,
+    navigateToProfile: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .border(
+                width = 1.dp,
+                color = Color.LightGray,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .noRippleClickable(onClick = navigateToProfile),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.profile),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(8.dp)
+                .clip(shape = CircleShape)
+        )
+
+        Text(text = "${userInfo.id} 님 😻")
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
     DiveTheme {
+        // 더미 데이터
         val sampleProfiles = listOf(
             ProfileItemModel(
                 badge = ProfileBadge.BIRTHDAY,
@@ -155,7 +215,14 @@ private fun HomeScreenPreview() {
         )
 
         HomeScreen(
-            profileItems = sampleProfiles
+            userInfo = UserInfo(
+                id = "깜자",
+                password = "1234",
+                nickname = "1234",
+                mbti = "ENFP"
+            ),
+            profileItems = sampleProfiles,
+            navigateToProfile = {}
         )
     }
 }

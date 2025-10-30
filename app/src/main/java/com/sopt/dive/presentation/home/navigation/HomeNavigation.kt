@@ -25,11 +25,18 @@ fun NavController.navigateToHome(
 }
 
 fun NavGraphBuilder.homeNavGraph(
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    navigateToProfile: () -> Unit
 ) {
     composable<Home> {
+        val context = LocalContext.current
+        val userPrefs = remember { UserPreferences(context) }
+        val userInfo = userPrefs.getUserInfo()
+
         HomeRoute(
-            paddingValues = paddingValues
+            paddingValues = paddingValues,
+            userInfo = userInfo,
+            navigateToProfile = navigateToProfile
         )
     }
 }
