@@ -1,6 +1,5 @@
 package com.sopt.dive.presentation.signin
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,7 +35,7 @@ import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extension.noRippleClickable
-import com.sopt.dive.core.util.validateSignIn
+import com.sopt.dive.core.util.handleSignIn
 
 @Composable
 fun SignInRoute(
@@ -56,21 +55,15 @@ fun SignInRoute(
         onPasswordChange = { password = it },
         onTextClick = onSignUpClick,
         onButtonClick = {
-            if (!validateSignIn(context, id, password)) {
-                return@SignInScreen
-            }
-
-            val loginSuccess = userPrefs.signIn(id, password)
-
-            if (loginSuccess) {
-                Toast.makeText(context, "로그인에 성공했습니다", Toast.LENGTH_SHORT).show()
-                onSignInSuccess()
-            } else {
-                Toast.makeText(context, "아이디 또는 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
-            }
+            handleSignIn(
+                context = context,
+                userPrefs = userPrefs,
+                id = id,
+                password = password,
+                onSuccess = onSignInSuccess
+            )
         },
-        modifier = Modifier
-            .padding(paddingValues)
+        modifier = Modifier.padding(paddingValues)
     )
 }
 

@@ -1,6 +1,5 @@
 package com.sopt.dive.presentation.signup
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,7 +33,7 @@ import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
-import com.sopt.dive.core.util.validateSignUp
+import com.sopt.dive.core.util.handleSignUp
 
 @Composable
 fun SignUpRoute(
@@ -58,21 +57,17 @@ fun SignUpRoute(
         onNicknameChange = setNickname,
         onMbtiChange = setMbti,
         onButtonClick = {
-            val isValid = validateSignUp(
+            handleSignUp(
                 context = context,
-                idText = id,
-                passwordText = password,
-                nicknameText = nickname,
-                mbtiText = mbti
+                userPrefs = userPrefs,
+                id = id,
+                password = password,
+                nickname = nickname,
+                mbti = mbti,
+                onSuccess = onSignUpSuccess
             )
-            if (isValid) {
-                userPrefs.registerUser(id, password, nickname, mbti)
-                Toast.makeText(context, "회원가입이 완료되었습니다", Toast.LENGTH_SHORT).show()
-                onSignUpSuccess()
-            }
         },
-        modifier = Modifier
-            .padding(paddingValues)
+        modifier = Modifier.padding(paddingValues)
     )
 }
 
