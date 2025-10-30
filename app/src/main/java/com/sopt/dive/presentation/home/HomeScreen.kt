@@ -108,8 +108,7 @@ fun HomeRoute(
         userInfo = userInfo,
         profileItems = profileItems,
         navigateToProfile = navigateToProfile,
-        modifier = Modifier
-            .padding(paddingValues)
+        modifier = Modifier.padding(paddingValues)
     )
 }
 

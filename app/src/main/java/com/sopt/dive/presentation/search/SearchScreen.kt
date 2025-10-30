@@ -12,8 +12,7 @@ fun SearchRoute(
     paddingValues: PaddingValues
 ) {
     SearchScreen(
-        modifier = Modifier
-            .padding(paddingValues)
+        modifier = Modifier.padding(paddingValues)
     )
 }
 

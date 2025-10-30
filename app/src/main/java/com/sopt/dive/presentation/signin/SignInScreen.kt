@@ -34,12 +34,12 @@ import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.core.extension.advancedImePadding
 import com.sopt.dive.core.extension.noRippleClickable
 import com.sopt.dive.core.util.handleSignIn
 
 @Composable
 fun SignInRoute(
-    paddingValues: PaddingValues,
     onSignUpClick: () -> Unit,
     onSignInSuccess: () -> Unit
 ) {
@@ -62,8 +62,7 @@ fun SignInRoute(
                 password = password,
                 onSuccess = onSignInSuccess
             )
-        },
-        modifier = Modifier.padding(paddingValues)
+        }
     )
 }
 

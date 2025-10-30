@@ -21,12 +21,10 @@ fun NavController.navigateToSignUp(
 }
 
 fun NavGraphBuilder.signUpNavGraph(
-    paddingValues: PaddingValues,
     navigateToSignIn: () -> Unit
 ) {
     composable<SignUp> {
         SignUpRoute(
-            paddingValues = paddingValues,
             onSignUpSuccess = navigateToSignIn
         )
     }

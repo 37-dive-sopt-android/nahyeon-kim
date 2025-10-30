@@ -41,8 +41,7 @@ fun MyPageRoute(
             userPrefs.signOut()
             onLogout()
         },
-        modifier = Modifier
-            .padding(paddingValues)
+        modifier = Modifier.padding(paddingValues)
     )
 }
 
@@ -57,9 +56,7 @@ fun MyPageScreen(
             .fillMaxSize()
             .background(color = Color(0xFFFAFAFA))
             .padding(16.dp)
-            .padding(top = 34.dp)
-            .systemBarsPadding()
-            .navigationBarsPadding(),
+            .padding(top = 34.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(

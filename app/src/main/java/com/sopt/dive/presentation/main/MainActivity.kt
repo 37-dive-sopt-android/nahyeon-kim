@@ -72,18 +72,15 @@ fun MainScreen(
             popExitTransition = { ExitTransition.None },
             navController = appState.navController,
             startDestination = appState.startDestination,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier = Modifier.fillMaxSize()
+
         ) {
             signInNavGraph(
-                paddingValues = innerPadding,
                 navigateToHome = appState::navigateToHome,
                 navigateToSignUp = appState::navigateToSignUp
             )
 
             signUpNavGraph(
-                paddingValues = innerPadding,
                 navigateToSignIn = appState::navigateToSignIn
             )
 
