@@ -2,6 +2,7 @@ package com.sopt.dive.core.util
 
 import android.content.Context
 import android.widget.Toast
+import com.sopt.dive.core.data.UserPreferences
 
 fun validateSignUp(
     context: Context,
@@ -48,5 +49,44 @@ fun validateSignIn(
         false
     } else {
         true
+    }
+}
+
+fun handleSignUp(
+    context: Context,
+    userPrefs: UserPreferences,
+    id: String,
+    password: String,
+    nickname: String,
+    mbti: String,
+    onSuccess: () -> Unit
+) {
+    if (!validateSignUp(context, id, password, nickname, mbti)) {
+        return
+    }
+
+    userPrefs.registerUser(id, password, nickname, mbti)
+    Toast.makeText(context, "회원가입이 완료되었습니다", Toast.LENGTH_SHORT).show()
+    onSuccess()
+}
+
+fun handleSignIn(
+    context: Context,
+    userPrefs: UserPreferences,
+    id: String,
+    password: String,
+    onSuccess: () -> Unit
+) {
+    if (!validateSignIn(context, id, password)) {
+        return
+    }
+
+    val loginSuccess = userPrefs.signIn(id, password)
+
+    if (loginSuccess) {
+        Toast.makeText(context, "로그인에 성공했습니다", Toast.LENGTH_SHORT).show()
+        onSuccess()
+    } else {
+        Toast.makeText(context, "아이디 또는 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
     }
 }

@@ -1,35 +1,30 @@
 package com.sopt.dive.presentation.main
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.sopt.dive.R
-import com.sopt.dive.presentation.signin.SignInActivity
-import com.sopt.dive.core.designsystem.component.SoptBasicButton
-import com.sopt.dive.core.designsystem.component.item.InfoItem
-import com.sopt.dive.core.data.UserInfo
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.NavHost
 import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.presentation.home.navigation.Home
+import com.sopt.dive.presentation.home.navigation.homeNavGraph
+import com.sopt.dive.presentation.main.component.MainBottomBar
+import com.sopt.dive.presentation.main.state.MainAppState
+import com.sopt.dive.presentation.main.state.rememberMainAppState
+import com.sopt.dive.presentation.mypage.navigation.myPageNavGraph
+import com.sopt.dive.presentation.search.navigation.searchNavGraph
+import com.sopt.dive.presentation.signin.navigation.SignIn
+import com.sopt.dive.presentation.signin.navigation.signInNavGraph
+import com.sopt.dive.presentation.signup.navigation.signUpNavGraph
 
 class MainActivity : ComponentActivity() {
     private lateinit var userPrefs: UserPreferences
@@ -40,109 +35,67 @@ class MainActivity : ComponentActivity() {
 
         userPrefs = UserPreferences(this)
 
-        if (!userPrefs.isSignedIn()) {
-            navigateToSignIn()
-            return
-        }
-
-        val userInfo = userPrefs.getUserInfo()
-
         setContent {
             DiveTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(
-                        userInfo = userInfo,
-                        onLogout = {
-                            handleLogout()
-                        },
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                val startDestination = if (userPrefs.isSignedIn()) Home else SignIn
+                val appState = rememberMainAppState(startDestination = startDestination)
+
+                MainScreen(appState = appState)
             }
         }
-    }
-
-    private fun handleLogout() {
-        userPrefs.signOut()
-        navigateToSignIn()
-    }
-
-    private fun navigateToSignIn() {
-        val intent = Intent(this, SignInActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
     }
 }
 
 @Composable
 fun MainScreen(
-    userInfo: UserInfo,
-    onLogout: () -> Unit,
-    modifier: Modifier = Modifier
+    appState: MainAppState
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = Color(0xFFFAFAFA))
-            .padding(16.dp)
-            .padding(top = 34.dp)
-            .systemBarsPadding()
-            .navigationBarsPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.profile),
-            contentDescription = null
-        )
+    val isBottomBarVisible by appState.isBottomBarVisible.collectAsStateWithLifecycle()
+    val currentTab by appState.currentTab.collectAsStateWithLifecycle()
 
-        Text("김나현")
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            InfoItem(
-                label = "ID",
-                value = userInfo.id
-            )
-
-            InfoItem(
-                label = "Password",
-                value = userInfo.password
-            )
-
-            InfoItem(
-                label = "Nickname",
-                value = userInfo.nickname
-            )
-
-            InfoItem(
-                label = "MBTI",
-                value = userInfo.mbti
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            MainBottomBar(
+                visible = isBottomBarVisible,
+                tabs = MainTab.entries.toList(),
+                currentTab = currentTab,
+                onTabSelected = appState::navigate
             )
         }
+    ) { innerPadding ->
+        NavHost(
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
+            navController = appState.navController,
+            startDestination = appState.startDestination,
+            modifier = Modifier.fillMaxSize()
 
-        Spacer(modifier = Modifier.weight(1f))
+        ) {
+            signInNavGraph(
+                navigateToHome = appState::navigateToHome,
+                navigateToSignUp = appState::navigateToSignUp
+            )
 
-        SoptBasicButton(
-            title = "로그아웃",
-            onClick = onLogout
-        )
-    }
-}
+            signUpNavGraph(
+                navigateToSignIn = appState::navigateToSignIn
+            )
 
-@Preview
-@Composable
-private fun MainScreenPreview() {
-    DiveTheme {
-        MainScreen(
-            userInfo = UserInfo(
-                id = "testUser",
-                password = "1234",
-                nickname = "테스트",
-                mbti = "ISTJ"
-            ),
-            onLogout = {}
-        )
+            homeNavGraph(
+                paddingValues = innerPadding,
+                navigateToProfile = appState::navigateToMyPage
+            )
+
+            searchNavGraph(
+                paddingValues = innerPadding
+            )
+
+            myPageNavGraph(
+                paddingValues = innerPadding,
+                navigateToSignIn = appState::navigateToSignIn
+            )
+        }
     }
 }
