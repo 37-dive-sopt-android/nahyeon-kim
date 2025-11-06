@@ -20,11 +20,11 @@ import com.sopt.dive.R
 import com.sopt.dive.presentation.home.model.ProfileBadge
 
 @Composable
-fun ProfileImage(
+private fun ProfileBadgeIcon(
     badge: ProfileBadge,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
-    val badgeIcon = remember {
+    val badgeIcon = remember(badge) {
         when (badge) {
             ProfileBadge.BIRTHDAY -> R.drawable.ic_profile_birthday
             ProfileBadge.MEMORIAL -> R.drawable.ic_profile_memorial
@@ -32,9 +32,22 @@ fun ProfileImage(
         }
     }
 
-    Box(
-        modifier = modifier
-    ) {
+    badgeIcon?.let {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = it),
+            contentDescription = null,
+            tint = Color.Unspecified,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun ProfileImage(
+    badge: ProfileBadge,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
         Image(
             painter = painterResource(R.drawable.profile),
             contentDescription = null,
@@ -47,16 +60,12 @@ fun ProfileImage(
                     width = 1.dp
                 )
         )
-        badgeIcon?.let {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = it),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .size(25.dp)
-                    .align(Alignment.BottomEnd)
 
-            )
-        }
+        ProfileBadgeIcon(
+            badge = badge,
+            modifier = Modifier
+                .size(25.dp)
+                .align(Alignment.BottomEnd)
+        )
     }
 }
