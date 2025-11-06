@@ -1,9 +1,5 @@
-package com.sopt.dive.presentation.signup
+package com.sopt.dive.presentation.signin
 
-import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,14 +9,14 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -28,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,76 +33,44 @@ import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
-import com.sopt.dive.core.util.validateSignUp
-
-class SignUpActivity : ComponentActivity() {
-    private lateinit var userPrefs: UserPreferences
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        userPrefs = UserPreferences(this)
-
-        setContent {
-            DiveTheme {
-                SingUpRoute(
-                    onSignUpClick = { id, password, nickname, mbti ->
-                        userPrefs.registerUser(id, password, nickname, mbti)
-
-                        Toast.makeText(this@SignUpActivity, "회원가입이 완료되었습니다", Toast.LENGTH_SHORT).show()
-                        setResult(RESULT_OK)
-                        finish()
-                    }
-                )
-            }
-        }
-    }
-}
+import com.sopt.dive.core.extension.noRippleClickable
+import com.sopt.dive.core.util.handleSignIn
 
 @Composable
-fun SingUpRoute(
-    onSignUpClick: (String, String, String, String) -> Unit
+fun SignInRoute(
+    onSignUpClick: () -> Unit,
+    onSignInSuccess: () -> Unit
 ) {
-    val (id, setId) = remember { mutableStateOf("") }
-    val (password, setPassword) = remember { mutableStateOf("") }
-    val (nickname, setNickname) = remember { mutableStateOf("") }
-    val (mbti, setMbti) = remember { mutableStateOf("") }
+    var id by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val userPrefs = remember { UserPreferences(context) }
 
-    SignUpScreen(
+    SignInScreen(
         id = id,
         password = password,
-        nickname = nickname,
-        mbti = mbti,
-        onIdChange = setId,
-        onPasswordChange = setPassword,
-        onNicknameChange = setNickname,
-        onMbtiChange = setMbti,
+        onIdChange = { id = it },
+        onPasswordChange = { password = it },
+        onTextClick = onSignUpClick,
         onButtonClick = {
-            val isValid = validateSignUp(
+            handleSignIn(
                 context = context,
-                idText = id,
-                passwordText = password,
-                nicknameText = nickname,
-                mbtiText = mbti
+                userPrefs = userPrefs,
+                id = id,
+                password = password,
+                onSuccess = onSignInSuccess
             )
-            if (isValid) {
-                onSignUpClick(id, password, nickname, mbti)
-            }
         }
     )
 }
 
 @Composable
-private fun SignUpScreen(
+private fun SignInScreen(
     id: String,
     password: String,
-    nickname: String,
-    mbti: String,
     onIdChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onNicknameChange: (String) -> Unit,
-    onMbtiChange: (String) -> Unit,
+    onTextClick: () -> Unit,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,14 +80,13 @@ private fun SignUpScreen(
         modifier = modifier
             .fillMaxSize()
             .background(color = Color(0xFFFAFAFA))
-            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
             .imePadding()
             .systemBarsPadding()
-            .navigationBarsPadding()
-            .padding(16.dp),
+            .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Sign Up", fontSize = 32.sp)
+        Text(text = "Welcome To SOPT", fontSize = 32.sp)
 
         Spacer(modifier = Modifier.height(30.dp))
 
@@ -143,28 +107,6 @@ private fun SignUpScreen(
             onValueChange = onPasswordChange,
             placeholder = "비밀번호를 입력해주세요",
             type = TextFieldType.Password,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            ),
-        )
-
-        InputItem(
-            label = "Nickname",
-            value = nickname,
-            onValueChange = onNicknameChange,
-            placeholder = "닉네임을 입력해주세요",
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            ),
-        )
-
-        InputItem(
-            label = "MBTI",
-            value = mbti,
-            onValueChange = onMbtiChange,
-            placeholder = "MBTI를 입력해주세요",
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = { focusManager.clearFocus() }
@@ -173,26 +115,33 @@ private fun SignUpScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        Text(
+            text = "회원가입하기",
+            textDecoration = TextDecoration.Underline,
+            fontSize = 16.sp,
+            color = Color.Gray,
+            modifier = Modifier
+                .noRippleClickable(onClick = onTextClick)
+                .padding(bottom = 8.dp)
+        )
+
         SoptBasicButton(
-            title = "회원가입하기",
-            onClick = onButtonClick
+            title = "로그인하기",
+            onClick = onButtonClick,
         )
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-private fun SignUpScreenPreview() {
+private fun SignInScreenPreview() {
     DiveTheme {
-        SignUpScreen(
+        SignInScreen(
             id = "testUser",
             password = "1234",
-            nickname = "테스트",
-            mbti = "ISTJ",
             onIdChange = {},
             onPasswordChange = {},
-            onNicknameChange = {},
-            onMbtiChange = {},
+            onTextClick = {},
             onButtonClick = {}
         )
     }

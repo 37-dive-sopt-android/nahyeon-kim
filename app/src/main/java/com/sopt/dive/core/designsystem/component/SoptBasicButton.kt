@@ -13,8 +13,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sopt.dive.core.extension.noRippleClickable
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.core.extension.noRippleClickable
 
 @Composable
 fun SoptBasicButton(
