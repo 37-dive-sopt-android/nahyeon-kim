@@ -39,7 +39,6 @@ fun FlipCard(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
             .noRippleClickable { isFlipped = !isFlipped },
         contentAlignment = Alignment.Center
     ) {
