@@ -1,5 +1,6 @@
 package com.sopt.dive.presentation.signup
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +16,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -24,61 +25,76 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.core.data.UserPreferences
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
-import com.sopt.dive.core.util.handleSignUp
+import com.sopt.dive.core.util.UiState
 
 @Composable
 fun SignUpRoute(
-    onSignUpSuccess: () -> Unit
+    onSignUpSuccess: () -> Unit,
+    viewModel: SignUpViewModel = viewModel()
 ) {
-    val (id, setId) = remember { mutableStateOf("") }
-    val (password, setPassword) = remember { mutableStateOf("") }
-    val (nickname, setNickname) = remember { mutableStateOf("") }
-    val (mbti, setMbti) = remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val userPrefs = remember { UserPreferences(context) }
 
-    SignUpScreen(
-        id = id,
-        password = password,
-        nickname = nickname,
-        mbti = mbti,
-        onIdChange = setId,
-        onPasswordChange = setPassword,
-        onNicknameChange = setNickname,
-        onMbtiChange = setMbti,
-        onButtonClick = {
-            handleSignUp(
-                context = context,
-                userPrefs = userPrefs,
-                id = id,
-                password = password,
-                nickname = nickname,
-                mbti = mbti,
-                onSuccess = onSignUpSuccess
+    when (uiState) {
+        is UiState.Success -> {
+            val data = (uiState as UiState.Success<SignUpUiState>).data
+
+            LaunchedEffect(data.signUpSuccessName) {
+                data.signUpSuccessName?.let { name -> Toast.makeText(context, "회원가입 성공! ${name}님 환영합니다.", Toast.LENGTH_SHORT
+                    ).show()
+                    onSignUpSuccess()
+                    viewModel.resetSignUpState()
+                }
+            }
+
+            SignUpScreen(
+                username = data.username,
+                password = data.password,
+                name = data.name,
+                email = data.email,
+                age = data.age,
+                isValid = data.isValid,
+                onUsernameChange = viewModel::updateUsername,
+                onPasswordChange = viewModel::updatePassword,
+                onNameChange = viewModel::updateName,
+                onEmailChange = viewModel::updateEmail,
+                onAgeChange = viewModel::updateAge,
+                onSignUpClick = viewModel::signUp
             )
         }
-    )
+        is UiState.Failure -> {
+            LaunchedEffect(Unit) { Toast.makeText(context, "회원가입에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                viewModel.resetSignUpState()
+            }
+        }
+        else -> {}
+    }
 }
 
 @Composable
 private fun SignUpScreen(
-    id: String,
+    username: String,
     password: String,
-    nickname: String,
-    mbti: String,
-    onIdChange: (String) -> Unit,
+    name: String,
+    email: String,
+    age: String,
+    isValid: Boolean,
+    onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onNicknameChange: (String) -> Unit,
-    onMbtiChange: (String) -> Unit,
-    onButtonClick: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onAgeChange: (String) -> Unit,
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -99,10 +115,10 @@ private fun SignUpScreen(
         Spacer(modifier = Modifier.height(30.dp))
 
         InputItem(
-            label = "ID",
-            value = id,
-            onValueChange = onIdChange,
-            placeholder = "아이디를 입력해주세요",
+            label = "Username",
+            value = username,
+            onValueChange = onUsernameChange,
+            placeholder = "사용자명을 입력해주세요",
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
@@ -118,28 +134,48 @@ private fun SignUpScreen(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            ),
+            )
         )
 
         InputItem(
-            label = "Nickname",
-            value = nickname,
-            onValueChange = onNicknameChange,
-            placeholder = "닉네임을 입력해주세요",
+            label = "Name",
+            value = name,
+            onValueChange = onNameChange,
+            placeholder = "이름을 입력해주세요",
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            ),
+            )
         )
 
         InputItem(
-            label = "MBTI",
-            value = mbti,
-            onValueChange = onMbtiChange,
-            placeholder = "MBTI를 입력해주세요",
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            label = "Email",
+            value = email,
+            onValueChange = onEmailChange,
+            placeholder = "이메일을 입력해주세요",
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Email
+            ),
             keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
+        )
+
+        InputItem(
+            label = "Age",
+            value = age,
+            onValueChange = onAgeChange,
+            placeholder = "나이를 입력해주세요",
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Number
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                    if (isValid) onSignUpClick()
+                }
             )
         )
 
@@ -147,7 +183,7 @@ private fun SignUpScreen(
 
         SoptBasicButton(
             title = "회원가입하기",
-            onClick = onButtonClick
+            onClick = onSignUpClick
         )
     }
 }
@@ -157,15 +193,18 @@ private fun SignUpScreen(
 private fun SignUpScreenPreview() {
     DiveTheme {
         SignUpScreen(
-            id = "testUser",
-            password = "1234",
-            nickname = "테스트",
-            mbti = "ISTJ",
-            onIdChange = {},
+            username = "",
+            password = "",
+            name = "",
+            email = "",
+            age = "",
+            isValid = false,
+            onUsernameChange = {},
             onPasswordChange = {},
-            onNicknameChange = {},
-            onMbtiChange = {},
-            onButtonClick = {}
+            onNameChange = {},
+            onEmailChange = {},
+            onAgeChange = {},
+            onSignUpClick = {}
         )
     }
 }
