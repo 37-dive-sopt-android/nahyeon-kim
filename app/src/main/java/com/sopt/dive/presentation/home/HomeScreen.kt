@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +54,16 @@ fun HomeRoute(
     }
 
     when (uiState) {
+        is UiState.Loading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
         is UiState.Success -> {
             val data = (uiState as UiState.Success<HomeUiState>).data
             HomeScreen(
@@ -97,14 +109,15 @@ private fun HomeScreen(
 
         items(
             items = profileItems,
-            key = { it.nickname }
+            key = { it.nickname + it.avatarUrl }
         ) { profile ->
             with(profile) {
                 ProfileItem(
                     badge = badge,
                     nickname = nickname,
                     description = description,
-                    actionType = actionType
+                    actionType = actionType,
+                    avatarUrl = avatarUrl
                 )
             }
         }

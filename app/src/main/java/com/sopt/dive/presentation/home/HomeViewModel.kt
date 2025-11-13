@@ -3,6 +3,8 @@ package com.sopt.dive.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sopt.dive.core.data.RepositoryProvider
+import com.sopt.dive.core.data.model.UserModel
+import com.sopt.dive.core.data.repository.OpenDataRepository
 import com.sopt.dive.core.data.repository.UserRepository
 import com.sopt.dive.core.util.UiState
 import com.sopt.dive.presentation.home.model.ProfileActionType
@@ -16,7 +18,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val userRepository: UserRepository = RepositoryProvider.userRepository
+    private val userRepository: UserRepository = RepositoryProvider.userRepository,
+    private val openDataRepository: OpenDataRepository = RepositoryProvider.openDataRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<HomeUiState>>(UiState.Empty)
@@ -25,16 +28,11 @@ class HomeViewModel(
     fun loadUserInfo(userId: Long) {
 
         viewModelScope.launch {
+            _uiState.update { UiState.Loading }
+
             userRepository.getUser(userId)
                 .onSuccess { memberModel ->
-                    _uiState.update {
-                        UiState.Success(
-                            HomeUiState(
-                                name = memberModel.name,
-                                profileItems = getFakeProfileItems()
-                            )
-                        )
-                    }
+                    loadUserListAndUpdate(memberModel.name)
                 }
                 .onFailure {
                     _uiState.update { UiState.Failure }
@@ -42,62 +40,56 @@ class HomeViewModel(
         }
     }
 
-    private fun getFakeProfileItems(): List<ProfileItemModel> {
-        return listOf(
-            ProfileItemModel(
-                badge = ProfileBadge.BIRTHDAY,
-                nickname = "김나현",
-                description = ProfileDescription.Exists("오늘 생일이에요! 🎉"),
-                actionType = ProfileActionType.Music("Super Shy - NewJeans")
-            ),
-            ProfileItemModel(
-                badge = ProfileBadge.MEMORIAL,
-                nickname = "이서준",
-                description = ProfileDescription.Exists("항상 그리워요."),
-                actionType = ProfileActionType.None
-            ),
-            ProfileItemModel(
-                badge = ProfileBadge.NONE,
-                nickname = "최지우",
-                description = ProfileDescription.None,
-                actionType = ProfileActionType.Gift
-            ),
-            ProfileItemModel(
-                badge = ProfileBadge.NONE,
-                nickname = "박지민",
-                description = ProfileDescription.Exists("요즘엔 산책이 좋아요"),
-                actionType = ProfileActionType.Music("Love Lee - AKMU")
-            ),
-            ProfileItemModel(
-                badge = ProfileBadge.BIRTHDAY,
-                nickname = "정하린",
-                description = ProfileDescription.Exists("오늘은 저를 위한 하루! 💖"),
-                actionType = ProfileActionType.Gift
-            ),
-            ProfileItemModel(
-                badge = ProfileBadge.MEMORIAL,
-                nickname = "윤서연",
-                description = ProfileDescription.Exists("늘 마음속에 함께해요."),
-                actionType = ProfileActionType.None
-            ),
-            ProfileItemModel(
-                badge = ProfileBadge.NONE,
-                nickname = "한지후",
-                description = ProfileDescription.Exists("요즘 커피에 빠졌어요 ☕"),
-                actionType = ProfileActionType.Music("Coffee - BTS")
-            ),
-            ProfileItemModel(
-                badge = ProfileBadge.NONE,
-                nickname = "오은서",
-                description = ProfileDescription.Exists("오늘은 하늘이 정말 예뻐요 🌤️"),
-                actionType = ProfileActionType.None
-            ),
-            ProfileItemModel(
-                badge = ProfileBadge.BIRTHDAY,
-                nickname = "김도윤",
-                description = ProfileDescription.Exists("축하해주셔서 감사해요! 🎂"),
-                actionType = ProfileActionType.Music("Happy - Pharrell Williams")
-            )
+    private suspend fun loadUserListAndUpdate(currentUserName: String) {
+        openDataRepository.getUserList(page = 2)
+            .onSuccess { userList ->
+                val profileItems = userList.users.map { it.toProfileItemModel() }
+
+                if (profileItems.isNotEmpty()) {
+                    _uiState.update {
+                        UiState.Success(
+                            HomeUiState(
+                                name = currentUserName,
+                                profileItems = profileItems
+                            )
+                        )
+                    }
+                } else {
+                    _uiState.update { UiState.Failure }
+                }
+            }
+            .onFailure {
+                _uiState.update { UiState.Failure }
+            }
+    }
+
+    private fun UserModel.toProfileItemModel(): ProfileItemModel {
+        val badge = when (id % 3) {
+            0 -> ProfileBadge.BIRTHDAY
+            1 -> ProfileBadge.MEMORIAL
+            else -> ProfileBadge.NONE
+        }
+
+        val description = when (id % 4) {
+            0 -> ProfileDescription.Exists("오늘 생일이에요! 🎉")
+            1 -> ProfileDescription.Exists("항상 그리워요.")
+            2 -> ProfileDescription.Exists("요즘 산책이 좋아요 🌤️")
+            else -> ProfileDescription.None
+        }
+
+        val actionType = when (id % 4) {
+            0 -> ProfileActionType.Music("Super Shy - NewJeans")
+            1 -> ProfileActionType.Gift
+            2 -> ProfileActionType.Music("Love Lee - AKMU")
+            else -> ProfileActionType.None
+        }
+
+        return ProfileItemModel(
+            badge = badge,
+            nickname = name,
+            description = description,
+            actionType = actionType,
+            avatarUrl = avatarUrl
         )
     }
 }
