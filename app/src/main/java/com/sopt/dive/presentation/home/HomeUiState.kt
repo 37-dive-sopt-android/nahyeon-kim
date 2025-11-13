@@ -1,23 +1,19 @@
 package com.sopt.dive.presentation.home
 
-import com.sopt.dive.core.data.UserInfo
+import androidx.compose.runtime.Immutable
 import com.sopt.dive.presentation.home.model.ProfileActionType
 import com.sopt.dive.presentation.home.model.ProfileBadge
 import com.sopt.dive.presentation.home.model.ProfileDescription
 import com.sopt.dive.presentation.home.model.ProfileItemModel
 
+@Immutable
 data class HomeUiState(
-    val userInfo: UserInfo,
-    val profileItems: List<ProfileItemModel>
+    val name: String = "",
+    val profileItems: List<ProfileItemModel> = emptyList()
 ) {
     companion object {
         val Fake = HomeUiState(
-            userInfo = UserInfo(
-                id = "깜자",
-                password = "1234",
-                nickname = "나현",
-                mbti = "INFJ"
-            ),
+            name = "나현",
             profileItems = listOf(
                 ProfileItemModel(
                     badge = ProfileBadge.BIRTHDAY,
