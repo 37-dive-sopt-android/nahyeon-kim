@@ -1,5 +1,6 @@
 package com.sopt.dive.presentation.signin
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,10 +14,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -28,50 +27,77 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extension.noRippleClickable
-import com.sopt.dive.core.util.handleSignIn
+import com.sopt.dive.core.util.UiState
 
 @Composable
 fun SignInRoute(
     onSignUpClick: () -> Unit,
-    onSignInSuccess: () -> Unit
+    onSignInSuccess: () -> Unit,
+    viewModel: SignInViewModel = viewModel()
 ) {
-    var id by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val userPrefs = remember { UserPreferences(context) }
+    val userPrefs = UserPreferences(context)
 
-    SignInScreen(
-        id = id,
-        password = password,
-        onIdChange = { id = it },
-        onPasswordChange = { password = it },
-        onTextClick = onSignUpClick,
-        onButtonClick = {
-            handleSignIn(
-                context = context,
-                userPrefs = userPrefs,
-                id = id,
-                password = password,
-                onSuccess = onSignInSuccess
+    when (uiState) {
+        is UiState.Success -> {
+            val data = (uiState as UiState.Success<SignInUiState>).data
+
+            LaunchedEffect(data.signInSuccessName) {
+                data.signInSuccessName?.let { username ->
+                    data.userId?.let { userId ->
+                        userPrefs.setUser(username, data.password)
+                        userPrefs.setUserId(userId)
+                        Toast.makeText(
+                            context,
+                            "로그인 성공! ${username}님 환영합니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        onSignInSuccess()
+                        viewModel.resetSignInState()
+                    }
+                }
+            }
+
+            SignInScreen(
+                username = data.username,
+                password = data.password,
+                onUsernameChange = viewModel::updateUsername,
+                onPasswordChange = viewModel::updatePassword,
+                onSignUpClick = onSignUpClick,
+                onSignInClick = viewModel::signIn
             )
         }
-    )
+        is UiState.Failure -> {
+            LaunchedEffect(Unit) {
+                Toast.makeText(
+                    context,
+                    "로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                viewModel.resetSignInState()
+            }
+        }
+        else -> {}
+    }
 }
 
 @Composable
 private fun SignInScreen(
-    id: String,
+    username: String,
     password: String,
-    onIdChange: (String) -> Unit,
+    onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onTextClick: () -> Unit,
-    onButtonClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    onSignInClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -92,8 +118,8 @@ private fun SignInScreen(
 
         InputItem(
             label = "ID",
-            value = id,
-            onValueChange = onIdChange,
+            value = username,
+            onValueChange = onUsernameChange,
             placeholder = "아이디를 입력해주세요",
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
@@ -109,7 +135,12 @@ private fun SignInScreen(
             type = TextFieldType.Password,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
+                onDone = {
+                    focusManager.clearFocus()
+                    if (username.isNotBlank() && password.isNotBlank()) {
+                        onSignInClick()
+                    }
+                }
             )
         )
 
@@ -121,13 +152,13 @@ private fun SignInScreen(
             fontSize = 16.sp,
             color = Color.Gray,
             modifier = Modifier
-                .noRippleClickable(onClick = onTextClick)
+                .noRippleClickable(onClick = onSignUpClick)
                 .padding(bottom = 8.dp)
         )
 
         SoptBasicButton(
             title = "로그인하기",
-            onClick = onButtonClick,
+            onClick = onSignInClick
         )
     }
 }
@@ -137,12 +168,12 @@ private fun SignInScreen(
 private fun SignInScreenPreview() {
     DiveTheme {
         SignInScreen(
-            id = "testUser",
+            username = "testUser",
             password = "1234",
-            onIdChange = {},
+            onUsernameChange = {},
             onPasswordChange = {},
-            onTextClick = {},
-            onButtonClick = {}
+            onSignUpClick = {},
+            onSignInClick = {}
         )
     }
 }
