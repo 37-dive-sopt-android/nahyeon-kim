@@ -1,77 +1,61 @@
 package com.sopt.dive.presentation.home
 
-import com.sopt.dive.core.data.UserInfo
+import androidx.compose.runtime.Immutable
 import com.sopt.dive.presentation.home.model.ProfileActionType
 import com.sopt.dive.presentation.home.model.ProfileBadge
 import com.sopt.dive.presentation.home.model.ProfileDescription
 import com.sopt.dive.presentation.home.model.ProfileItemModel
 
+@Immutable
 data class HomeUiState(
-    val userInfo: UserInfo,
-    val profileItems: List<ProfileItemModel>
+    val name: String = "",
+    val profileItems: List<ProfileItemModel> = emptyList()
 ) {
     companion object {
         val Fake = HomeUiState(
-            userInfo = UserInfo(
-                id = "깜자",
-                password = "1234",
-                nickname = "나현",
-                mbti = "INFJ"
-            ),
+            name = "나현",
             profileItems = listOf(
                 ProfileItemModel(
                     badge = ProfileBadge.BIRTHDAY,
-                    nickname = "김나현",
+                    nickname = "George Bluth",
                     description = ProfileDescription.Exists("오늘 생일이에요! 🎉"),
-                    actionType = ProfileActionType.Music("Super Shy - NewJeans")
+                    actionType = ProfileActionType.Music("Super Shy - NewJeans"),
+                    avatarUrl = "https://reqres.in/img/faces/1-image.jpg"
                 ),
                 ProfileItemModel(
                     badge = ProfileBadge.MEMORIAL,
-                    nickname = "이서준",
+                    nickname = "Janet Weaver",
                     description = ProfileDescription.Exists("항상 그리워요."),
-                    actionType = ProfileActionType.None
+                    actionType = ProfileActionType.None,
+                    avatarUrl = "https://reqres.in/img/faces/2-image.jpg"
                 ),
                 ProfileItemModel(
                     badge = ProfileBadge.NONE,
-                    nickname = "최지우",
+                    nickname = "Emma Wong",
                     description = ProfileDescription.None,
-                    actionType = ProfileActionType.Gift
+                    actionType = ProfileActionType.Gift,
+                    avatarUrl = "https://reqres.in/img/faces/3-image.jpg"
                 ),
                 ProfileItemModel(
                     badge = ProfileBadge.NONE,
-                    nickname = "박지민",
+                    nickname = "Eve Holt",
                     description = ProfileDescription.Exists("요즘엔 산책이 좋아요"),
-                    actionType = ProfileActionType.Music("Love Lee - AKMU")
+                    actionType = ProfileActionType.Music("Love Lee - AKMU"),
+                    avatarUrl = "https://reqres.in/img/faces/4-image.jpg"
                 ),
                 ProfileItemModel(
                     badge = ProfileBadge.BIRTHDAY,
-                    nickname = "정하린",
+                    nickname = "Charles Morris",
                     description = ProfileDescription.Exists("오늘은 저를 위한 하루! 💖"),
-                    actionType = ProfileActionType.Gift
+                    actionType = ProfileActionType.Gift,
+                    avatarUrl = "https://reqres.in/img/faces/5-image.jpg"
                 ),
                 ProfileItemModel(
                     badge = ProfileBadge.MEMORIAL,
-                    nickname = "윤서연",
+                    nickname = "Tracey Ramos",
                     description = ProfileDescription.Exists("늘 마음속에 함께해요."),
-                    actionType = ProfileActionType.None
-                ),
-                ProfileItemModel(
-                    badge = ProfileBadge.NONE,
-                    nickname = "한지후",
-                    description = ProfileDescription.Exists("요즘 커피에 빠졌어요 ☕"),
-                    actionType = ProfileActionType.Music("Coffee - BTS")
-                ),
-                ProfileItemModel(
-                    badge = ProfileBadge.NONE,
-                    nickname = "오은서",
-                    description = ProfileDescription.Exists("오늘은 하늘이 정말 예뻐요 🌤️"),
-                    actionType = ProfileActionType.None
-                ),
-                ProfileItemModel(
-                    badge = ProfileBadge.BIRTHDAY,
-                    nickname = "김도윤",
-                    description = ProfileDescription.Exists("축하해주셔서 감사해요! 🎂"),
-                    actionType = ProfileActionType.Music("Happy - Pharrell Williams")
+                    actionType = ProfileActionType.None,
+                    avatarUrl = "https://reqres.in/img/faces/6-image.jpg"
                 )
             )
         )

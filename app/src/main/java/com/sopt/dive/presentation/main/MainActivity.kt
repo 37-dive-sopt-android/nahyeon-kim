@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DiveTheme {
-                val startDestination = if (userPrefs.isSignedIn()) Home else SignIn
+                val startDestination = if (userPrefs.isLoggedIn()) Home else SignIn
                 val appState = rememberMainAppState(startDestination = startDestination)
 
                 MainScreen(appState = appState)

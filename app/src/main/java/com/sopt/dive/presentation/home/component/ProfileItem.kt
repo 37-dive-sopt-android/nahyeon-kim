@@ -23,6 +23,7 @@ fun ProfileItem(
     nickname: String,
     description: ProfileDescription,
     actionType: ProfileActionType,
+    avatarUrl: String,
     modifier: Modifier = Modifier
 ) {
 
@@ -40,7 +41,7 @@ fun ProfileItem(
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        ProfileImage(badge = badge, modifier = Modifier.padding(end = 10.dp))
+        ProfileImage(badge = badge, avatarUrl = avatarUrl, modifier = Modifier.padding(end = 10.dp))
         ProfileInfo(nickname = nickname, description = description)
         Spacer(modifier = Modifier.weight(1f))
         ProfileAction(actionType = effectiveActionType)
@@ -55,9 +56,9 @@ private fun ProfileItemPreview() {
         Column(
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            ProfileImage(badge = ProfileBadge.BIRTHDAY)
-            ProfileImage(badge = ProfileBadge.MEMORIAL)
-            ProfileImage(badge = ProfileBadge.NONE)
+            ProfileImage(badge = ProfileBadge.BIRTHDAY, avatarUrl = "https://reqres.in/img/faces/1-image.jpg")
+            ProfileImage(badge = ProfileBadge.MEMORIAL, avatarUrl = "https://reqres.in/img/faces/2-image.jpg")
+            ProfileImage(badge = ProfileBadge.NONE, avatarUrl = "")
 
             ProfileInfo(nickname = "김나현", ProfileDescription.Exists("안녕하세요"))
 
@@ -69,7 +70,8 @@ private fun ProfileItemPreview() {
                 badge = ProfileBadge.BIRTHDAY,
                 nickname = "김나현",
                 description = ProfileDescription.Exists("안녕하세요"),
-                actionType = ProfileActionType.Music("Ditto - NewJeans")
+                actionType = ProfileActionType.Music("Ditto - NewJeans"),
+                avatarUrl = "https://reqres.in/img/faces/1-image.jpg"
             )
         }
     }
