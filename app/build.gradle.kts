@@ -25,6 +25,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", properties["base.url"].toString())
+        buildConfigField("String", "OPEN_URL", properties["open.url"].toString())
     }
 
     buildTypes {
@@ -50,6 +51,8 @@ android {
 }
 
 dependencies {
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit.core)
