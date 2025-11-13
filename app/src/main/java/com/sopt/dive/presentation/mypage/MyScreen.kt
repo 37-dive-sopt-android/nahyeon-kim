@@ -1,5 +1,6 @@
 package com.sopt.dive.presentation.mypage
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,35 +20,64 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.R
-import com.sopt.dive.core.data.UserInfo
 import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InfoItem
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.core.util.UiState
 
 @Composable
 fun MyPageRoute(
     paddingValues: PaddingValues,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    viewModel: MyPageViewModel = viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val userPrefs = UserPreferences(context)
-    val userInfo = userPrefs.getUserInfo()
+    val userId = userPrefs.getUserId()
 
-    MyPageScreen(
-        userInfo = userInfo,
-        onLogout = {
-            userPrefs.signOut()
-            onLogout()
-        },
-        modifier = Modifier.padding(paddingValues)
-    )
+    LaunchedEffect(userId) {
+        viewModel.loadUserInfo(userId)
+    }
+
+    when (uiState) {
+        is UiState.Success -> {
+            val data = (uiState as UiState.Success<MyPageUiState>).data
+            MyPageScreen(
+                username = data.username,
+                name = data.name,
+                email = data.email,
+                age = data.age,
+                onLogout = {
+                    userPrefs.signOut()
+                    onLogout()
+                },
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
+        is UiState.Failure -> {
+            LaunchedEffect(Unit) {
+                Toast.makeText(
+                    context,
+                    "사용자 정보를 불러오는데 실패했습니다.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        else -> {}
+    }
 }
 
 @Composable
 fun MyPageScreen(
-    userInfo: UserInfo,
+    username: String,
+    name: String,
+    email: String,
+    age: Int,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -62,29 +94,29 @@ fun MyPageScreen(
             contentDescription = null
         )
 
-        Text("김나현")
+        Text(name)
 
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             InfoItem(
-                label = "ID",
-                value = userInfo.id
+                label = "Username",
+                value = username
             )
 
             InfoItem(
-                label = "Password",
-                value = userInfo.password
+                label = "Name",
+                value = name
             )
 
             InfoItem(
-                label = "Nickname",
-                value = userInfo.nickname
+                label = "Email",
+                value = email
             )
 
             InfoItem(
-                label = "MBTI",
-                value = userInfo.mbti
+                label = "Age",
+                value = age.toString()
             )
         }
 
@@ -102,12 +134,10 @@ fun MyPageScreen(
 private fun MyPageScreenPreview() {
     DiveTheme {
         MyPageScreen(
-            userInfo = UserInfo(
-                id = "testUser",
-                password = "1234",
-                nickname = "테스트",
-                mbti = "ISTJ"
-            ),
+            username = "testUser",
+            name = "김나현",
+            email = "test@example.com",
+            age = 25,
             onLogout = {}
         )
     }
