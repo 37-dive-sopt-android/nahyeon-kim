@@ -1,12 +1,10 @@
 package com.sopt.dive.core.data.service
 
 import com.sopt.dive.core.data.dto.request.SignUpRequestDto
-import com.sopt.dive.core.data.dto.request.UserInfoPatchRequestDto
 import com.sopt.dive.core.data.dto.response.BaseResponseDto
 import com.sopt.dive.core.data.dto.response.MemberResponseDto
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -20,10 +18,4 @@ interface UserService {
     suspend fun getUser(
         @Path("id") id: Long
     ): BaseResponseDto<MemberResponseDto>
-
-    @PATCH("/api/v1/users/{id}")
-    suspend fun patchUserInfo(
-        @Path("id") id: Long,
-        @Body requestDto: UserInfoPatchRequestDto
-    ) : BaseResponseDto<MemberResponseDto>
 }
