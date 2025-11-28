@@ -27,6 +27,7 @@ import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InfoItem
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.util.UiState
+import com.sopt.dive.core.util.collectSideEffect
 
 @Composable
 fun MyPageRoute(
@@ -36,6 +37,18 @@ fun MyPageRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    viewModel.sideEffect.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is MyPageSideEffect.ShowToast -> {
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            }
+
+            is MyPageSideEffect.NavigateToSignIn -> {
+                onLogout()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadUserInfo()
@@ -49,10 +62,7 @@ fun MyPageRoute(
                 name = data.name,
                 email = data.email,
                 age = data.age,
-                onLogout = {
-                    viewModel.signOut()
-                    onLogout()
-                },
+                onLogout = viewModel::signOut,
                 modifier = Modifier.padding(paddingValues)
             )
         }
