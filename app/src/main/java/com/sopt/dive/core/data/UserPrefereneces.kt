@@ -1,13 +1,12 @@
 package com.sopt.dive.core.data
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import javax.inject.Inject
 
-class UserPreferences(context: Context) {
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
+class UserPreferences @Inject constructor(
+    private val prefs: SharedPreferences
+) {
     fun setUser(username: String, password: String) {
         prefs.edit {
             putString(KEY_USERNAME, username)
@@ -37,7 +36,6 @@ class UserPreferences(context: Context) {
     }
 
     companion object {
-        private const val PREFS_NAME = "user_prefs"
         private const val KEY_USERNAME = "username"
         private const val KEY_USER_ID = "user_id"
         private const val KEY_PASSWORD = "password"
