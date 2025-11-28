@@ -3,6 +3,7 @@ package com.sopt.dive.core.data
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.sopt.dive.BuildConfig
 import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,6 +21,10 @@ object ApiFactory {
         .addInterceptor(loggingInterceptor)
         .build()
 
+    private val openClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .build()
+
     val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -31,7 +36,7 @@ object ApiFactory {
     val openRetrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(OPEN_URL)
-            .client(client)
+            .client(openClient)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
