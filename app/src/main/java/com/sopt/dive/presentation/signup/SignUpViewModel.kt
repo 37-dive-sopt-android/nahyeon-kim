@@ -7,10 +7,12 @@ import com.sopt.dive.core.data.repository.UserRepository
 import com.sopt.dive.core.util.UiState
 import com.sopt.dive.core.util.updateSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +25,9 @@ class SignUpViewModel @Inject constructor(
         UiState.Success(SignUpUiState())
     )
     val uiState: StateFlow<UiState<SignUpUiState>> = _uiState.asStateFlow()
+
+    private val _sideEffect = MutableSharedFlow<SignUpSideEffect>()
+    val sideEffect: SharedFlow<SignUpSideEffect> = _sideEffect.asSharedFlow()
 
     fun updateUsername(username: String) {
         _uiState.updateSuccess { it.copy(username = username) }
@@ -47,7 +52,13 @@ class SignUpViewModel @Inject constructor(
 
     fun signUp() {
         val formData = (_uiState.value as? UiState.Success)?.data ?: return
-        if (!formData.isValid) return
+
+        formData.validationError?.let { error ->
+            viewModelScope.launch {
+                _sideEffect.emit(SignUpSideEffect.ShowToast(error))
+            }
+            return
+        }
 
         viewModelScope.launch {
             userRepository.postSignUp(
@@ -59,16 +70,16 @@ class SignUpViewModel @Inject constructor(
                     age = formData.ageValue!!
                 )
             ).onSuccess { memberModel ->
-                _uiState.updateSuccess {
-                    it.copy(signUpSuccessName = memberModel.name)
-                }
+                _sideEffect.emit(SignUpSideEffect.ShowToast("회원가입 성공! ${memberModel.name}님 환영합니다."))
+                _sideEffect.emit(SignUpSideEffect.NavigateToSignIn)
             }.onFailure {
-                _uiState.update { UiState.Failure }
+                _sideEffect.emit(SignUpSideEffect.ShowToast("회원가입에 실패했습니다."))
             }
         }
     }
+}
 
-    fun resetSignUpState() {
-        _uiState.update { UiState.Success(SignUpUiState()) }
-    }
+sealed interface SignUpSideEffect {
+    data class ShowToast(val message: String) : SignUpSideEffect
+    data object NavigateToSignIn : SignUpSideEffect
 }
