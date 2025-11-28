@@ -1,6 +1,7 @@
 package com.sopt.dive.presentation.home.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -13,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.sopt.dive.R
 import com.sopt.dive.presentation.home.model.ProfileBadge
 
@@ -45,21 +48,33 @@ private fun ProfileBadgeIcon(
 @Composable
 fun ProfileImage(
     badge: ProfileBadge,
+    avatarUrl: String,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
-        Image(
-            painter = painterResource(R.drawable.profile),
-            contentDescription = null,
-            modifier = Modifier
-                .size(52.dp)
-                .clip(shape = CircleShape)
-                .border(
-                    shape = CircleShape,
-                    color = Color.LightGray,
-                    width = 1.dp
-                )
-        )
+        val imageModifier = Modifier
+            .size(52.dp)
+            .clip(shape = CircleShape)
+            .border(
+                shape = CircleShape,
+                color = Color.LightGray,
+                width = 1.dp
+            )
+
+        if (avatarUrl.isNotEmpty()) {
+            AsyncImage(
+                model = avatarUrl,
+                contentDescription = null,
+                modifier = imageModifier.background(Color.LightGray),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Image(
+                painter = painterResource(R.drawable.profile),
+                contentDescription = null,
+                modifier = imageModifier
+            )
+        }
 
         ProfileBadgeIcon(
             badge = badge,
@@ -69,3 +84,4 @@ fun ProfileImage(
         )
     }
 }
+

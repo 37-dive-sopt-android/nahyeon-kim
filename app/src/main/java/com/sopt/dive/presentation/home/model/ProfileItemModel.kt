@@ -7,5 +7,6 @@ data class ProfileItemModel(
     val badge: ProfileBadge,
     val nickname: String,
     val description: ProfileDescription,
-    val actionType: ProfileActionType
+    val actionType: ProfileActionType,
+    val avatarUrl: String = ""
 )

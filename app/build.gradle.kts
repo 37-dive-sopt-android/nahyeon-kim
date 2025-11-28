@@ -1,9 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
+
+val properties = Properties().apply {
+    load(project.rootProject.file("local.properties").inputStream())
+}
+
 
 android {
     namespace = "com.sopt.dive"
@@ -17,6 +24,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BASE_URL", properties["base.url"].toString())
+        buildConfigField("String", "OPEN_URL", properties["open.url"].toString())
+        buildConfigField("String", "OPEN_API_KEY", properties["open.api.key"].toString())
     }
 
     buildTypes {
@@ -37,10 +47,18 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.okhttp.logging)
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
     implementation(libs.androidx.core.ktx)
