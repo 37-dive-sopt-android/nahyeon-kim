@@ -27,9 +27,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
@@ -41,11 +40,10 @@ import com.sopt.dive.core.util.UiState
 fun SignInRoute(
     onSignUpClick: () -> Unit,
     onSignInSuccess: () -> Unit,
-    viewModel: SignInViewModel = viewModel()
+    viewModel: SignInViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val userPrefs = UserPreferences(context)
 
     when (uiState) {
         is UiState.Success -> {
@@ -53,17 +51,10 @@ fun SignInRoute(
 
             LaunchedEffect(data.signInSuccessName) {
                 data.signInSuccessName?.let { username ->
-                    data.userId?.let { userId ->
-                        userPrefs.setUser(username, data.password)
-                        userPrefs.setUserId(userId)
-                        Toast.makeText(
-                            context,
-                            "로그인 성공! ${username}님 환영합니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        onSignInSuccess()
-                        viewModel.resetSignInState()
-                    }
+                    Toast.makeText(context, "로그인 성공! ${username}님 환영합니다.", Toast.LENGTH_SHORT)
+                        .show()
+                    onSignInSuccess()
+                    viewModel.resetSignInState()
                 }
             }
 
@@ -76,6 +67,7 @@ fun SignInRoute(
                 onSignInClick = viewModel::signIn
             )
         }
+
         is UiState.Failure -> {
             LaunchedEffect(Unit) {
                 Toast.makeText(
@@ -86,6 +78,7 @@ fun SignInRoute(
                 viewModel.resetSignInState()
             }
         }
+
         else -> {}
     }
 }

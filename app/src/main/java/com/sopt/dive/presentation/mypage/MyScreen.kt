@@ -20,10 +20,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.R
-import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InfoItem
 import com.sopt.dive.core.designsystem.theme.DiveTheme
@@ -33,15 +32,13 @@ import com.sopt.dive.core.util.UiState
 fun MyPageRoute(
     paddingValues: PaddingValues,
     onLogout: () -> Unit,
-    viewModel: MyPageViewModel = viewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val userPrefs = UserPreferences(context)
-    val userId = userPrefs.getUserId()
 
-    LaunchedEffect(userId) {
-        viewModel.loadUserInfo(userId)
+    LaunchedEffect(Unit) {
+        viewModel.loadUserInfo()
     }
 
     when (uiState) {
@@ -53,21 +50,19 @@ fun MyPageRoute(
                 email = data.email,
                 age = data.age,
                 onLogout = {
-                    userPrefs.signOut()
+                    viewModel.signOut()
                     onLogout()
                 },
                 modifier = Modifier.padding(paddingValues)
             )
         }
+
         is UiState.Failure -> {
             LaunchedEffect(Unit) {
-                Toast.makeText(
-                    context,
-                    "사용자 정보를 불러오는데 실패했습니다.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "사용자 정보를 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
+
         else -> {}
     }
 }
