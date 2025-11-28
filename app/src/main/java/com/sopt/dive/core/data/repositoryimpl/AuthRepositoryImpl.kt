@@ -7,12 +7,13 @@ import com.sopt.dive.core.data.model.toDto
 import com.sopt.dive.core.data.model.toModel
 import com.sopt.dive.core.data.repository.AuthRepository
 import com.sopt.dive.core.util.suspendRunCatching
+import javax.inject.Inject
 
-class AuthRepositoryImpl (
+class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource
 ) : AuthRepository {
     override suspend fun postSignIn(request: SignInRequestModel): Result<SignInModel> =
         suspendRunCatching {
             authDataSource.postSignIn(request = request.toDto()).data!!.toModel()
         }
-    }
+}

@@ -7,8 +7,9 @@ import com.sopt.dive.core.data.model.toDto
 import com.sopt.dive.core.data.model.toModel
 import com.sopt.dive.core.data.repository.UserRepository
 import com.sopt.dive.core.util.suspendRunCatching
+import javax.inject.Inject
 
-class UserRepositoryImpl (
+class UserRepositoryImpl @Inject constructor(
     private val userDataSource: UserDataSource
 ) : UserRepository {
     override suspend fun postSignUp(request: SignUpRequestModel): Result<MemberModel> =

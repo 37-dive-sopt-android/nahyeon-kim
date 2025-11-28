@@ -5,8 +5,9 @@ import com.sopt.dive.core.data.model.UserListModel
 import com.sopt.dive.core.data.model.toModel
 import com.sopt.dive.core.data.repository.OpenDataRepository
 import com.sopt.dive.core.util.suspendRunCatching
+import javax.inject.Inject
 
-class OpenDataRepositoryImpl(
+class OpenDataRepositoryImpl @Inject constructor(
     private val openDataDataSource: OpenDataDataSource
 ) : OpenDataRepository {
     override suspend fun getUserList(page: Int): Result<UserListModel> =
