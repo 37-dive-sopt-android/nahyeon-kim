@@ -28,10 +28,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.R
-import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extension.noRippleClickable
 import com.sopt.dive.core.util.UiState
@@ -42,15 +41,13 @@ import com.sopt.dive.presentation.home.model.ProfileItemModel
 fun HomeRoute(
     paddingValues: PaddingValues,
     navigateToProfile: () -> Unit,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val userPrefs = UserPreferences(context)
-    val userId = userPrefs.getUserId()
 
-    LaunchedEffect(userId) {
-        viewModel.loadUserInfo(userId)
+    LaunchedEffect(Unit) {
+        viewModel.loadUserInfo()
     }
 
     when (uiState) {
@@ -64,6 +61,7 @@ fun HomeRoute(
                 CircularProgressIndicator()
             }
         }
+
         is UiState.Success -> {
             val data = (uiState as UiState.Success<HomeUiState>).data
             HomeScreen(
@@ -73,6 +71,7 @@ fun HomeRoute(
                 modifier = Modifier.padding(paddingValues)
             )
         }
+
         is UiState.Failure -> {
             LaunchedEffect(Unit) {
                 Toast.makeText(
@@ -82,6 +81,7 @@ fun HomeRoute(
                 ).show()
             }
         }
+
         else -> {}
     }
 }

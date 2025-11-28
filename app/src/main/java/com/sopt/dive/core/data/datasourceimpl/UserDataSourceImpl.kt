@@ -5,8 +5,9 @@ import com.sopt.dive.core.data.dto.request.SignUpRequestDto
 import com.sopt.dive.core.data.dto.response.BaseResponseDto
 import com.sopt.dive.core.data.dto.response.MemberResponseDto
 import com.sopt.dive.core.data.service.UserService
+import javax.inject.Inject
 
-class UserDataSourceImpl (
+class UserDataSourceImpl @Inject constructor(
     private val userService: UserService
 ) : UserDataSource {
     override suspend fun postSignUp(request: SignUpRequestDto): BaseResponseDto<MemberResponseDto> =
