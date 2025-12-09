@@ -2,11 +2,11 @@ package com.sopt.dive.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sopt.dive.core.data.UserPreferences
-import com.sopt.dive.core.data.model.UserModel
-import com.sopt.dive.core.data.repository.OpenDataRepository
-import com.sopt.dive.core.data.repository.UserRepository
 import com.sopt.dive.core.util.UiState
+import com.sopt.dive.data.UserPreferences
+import com.sopt.dive.data.model.UserModel
+import com.sopt.dive.data.repository.OpenDataRepository
+import com.sopt.dive.data.repository.UserRepository
 import com.sopt.dive.presentation.home.model.ProfileActionType
 import com.sopt.dive.presentation.home.model.ProfileBadge
 import com.sopt.dive.presentation.home.model.ProfileDescription

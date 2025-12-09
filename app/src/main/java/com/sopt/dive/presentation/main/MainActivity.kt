@@ -13,8 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
-import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.data.UserPreferences
 import com.sopt.dive.presentation.home.navigation.Home
 import com.sopt.dive.presentation.home.navigation.homeNavGraph
 import com.sopt.dive.presentation.main.component.MainBottomBar

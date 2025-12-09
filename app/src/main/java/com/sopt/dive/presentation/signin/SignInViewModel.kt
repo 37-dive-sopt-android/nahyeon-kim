@@ -2,11 +2,11 @@ package com.sopt.dive.presentation.signin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sopt.dive.core.data.UserPreferences
-import com.sopt.dive.core.data.model.SignInRequestModel
-import com.sopt.dive.core.data.repository.AuthRepository
 import com.sopt.dive.core.util.UiState
 import com.sopt.dive.core.util.updateSuccess
+import com.sopt.dive.data.UserPreferences
+import com.sopt.dive.data.model.SignInRequestModel
+import com.sopt.dive.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

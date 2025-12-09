@@ -2,10 +2,10 @@ package com.sopt.dive.presentation.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sopt.dive.core.data.model.SignUpRequestModel
-import com.sopt.dive.core.data.repository.UserRepository
 import com.sopt.dive.core.util.UiState
 import com.sopt.dive.core.util.updateSuccess
+import com.sopt.dive.data.model.SignUpRequestModel
+import com.sopt.dive.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
