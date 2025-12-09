@@ -16,7 +16,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,33 +28,38 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.util.UiState
+import com.sopt.dive.core.util.collectSideEffect
 
 @Composable
 fun SignUpRoute(
     onSignUpSuccess: () -> Unit,
-    viewModel: SignUpViewModel = viewModel()
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    viewModel.sideEffect.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is SignUpSideEffect.ShowToast -> {
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            }
+
+            is SignUpSideEffect.NavigateToSignIn -> {
+                onSignUpSuccess()
+            }
+        }
+    }
+
     when (uiState) {
         is UiState.Success -> {
             val data = (uiState as UiState.Success<SignUpUiState>).data
-
-            LaunchedEffect(data.signUpSuccessName) {
-                data.signUpSuccessName?.let { name -> Toast.makeText(context, "회원가입 성공! ${name}님 환영합니다.", Toast.LENGTH_SHORT
-                    ).show()
-                    onSignUpSuccess()
-                    viewModel.resetSignUpState()
-                }
-            }
 
             SignUpScreen(
                 username = data.username,
@@ -72,11 +76,9 @@ fun SignUpRoute(
                 onSignUpClick = viewModel::signUp
             )
         }
-        is UiState.Failure -> {
-            LaunchedEffect(Unit) { Toast.makeText(context, "회원가입에 실패했습니다.", Toast.LENGTH_SHORT).show()
-                viewModel.resetSignUpState()
-            }
-        }
+
+        is UiState.Failure -> {}
+
         else -> {}
     }
 }

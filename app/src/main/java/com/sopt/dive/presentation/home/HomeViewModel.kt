@@ -2,31 +2,39 @@ package com.sopt.dive.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sopt.dive.core.data.RepositoryProvider
-import com.sopt.dive.core.data.model.UserModel
-import com.sopt.dive.core.data.repository.OpenDataRepository
-import com.sopt.dive.core.data.repository.UserRepository
 import com.sopt.dive.core.util.UiState
+import com.sopt.dive.data.UserPreferences
+import com.sopt.dive.data.model.UserModel
+import com.sopt.dive.data.repository.OpenDataRepository
+import com.sopt.dive.data.repository.UserRepository
 import com.sopt.dive.presentation.home.model.ProfileActionType
 import com.sopt.dive.presentation.home.model.ProfileBadge
 import com.sopt.dive.presentation.home.model.ProfileDescription
 import com.sopt.dive.presentation.home.model.ProfileItemModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(
-    private val userRepository: UserRepository = RepositoryProvider.userRepository,
-    private val openDataRepository: OpenDataRepository = RepositoryProvider.openDataRepository
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val openDataRepository: OpenDataRepository,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<HomeUiState>>(UiState.Empty)
     val uiState: StateFlow<UiState<HomeUiState>> = _uiState.asStateFlow()
 
-    fun loadUserInfo(userId: Long) {
+    fun loadUserInfo() {
+        val userId = userPreferences.getUserId()
+        loadUserInfoById(userId)
+    }
 
+    private fun loadUserInfoById(userId: Long) {
         viewModelScope.launch {
             _uiState.update { UiState.Loading }
 

@@ -14,7 +14,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,45 +26,40 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InputItem
 import com.sopt.dive.core.designsystem.component.item.TextFieldType
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.extension.noRippleClickable
 import com.sopt.dive.core.util.UiState
+import com.sopt.dive.core.util.collectSideEffect
 
 @Composable
 fun SignInRoute(
     onSignUpClick: () -> Unit,
     onSignInSuccess: () -> Unit,
-    viewModel: SignInViewModel = viewModel()
+    viewModel: SignInViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val userPrefs = UserPreferences(context)
+
+    viewModel.sideEffect.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is SignInSideEffect.ShowToast -> {
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            }
+
+            is SignInSideEffect.NavigateToHome -> {
+                onSignInSuccess()
+            }
+        }
+    }
 
     when (uiState) {
         is UiState.Success -> {
             val data = (uiState as UiState.Success<SignInUiState>).data
-
-            LaunchedEffect(data.signInSuccessName) {
-                data.signInSuccessName?.let { username ->
-                    data.userId?.let { userId ->
-                        userPrefs.setUser(username, data.password)
-                        userPrefs.setUserId(userId)
-                        Toast.makeText(
-                            context,
-                            "로그인 성공! ${username}님 환영합니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        onSignInSuccess()
-                        viewModel.resetSignInState()
-                    }
-                }
-            }
 
             SignInScreen(
                 username = data.username,
@@ -76,16 +70,9 @@ fun SignInRoute(
                 onSignInClick = viewModel::signIn
             )
         }
-        is UiState.Failure -> {
-            LaunchedEffect(Unit) {
-                Toast.makeText(
-                    context,
-                    "로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                viewModel.resetSignInState()
-            }
-        }
+
+        is UiState.Failure -> {}
+
         else -> {}
     }
 }

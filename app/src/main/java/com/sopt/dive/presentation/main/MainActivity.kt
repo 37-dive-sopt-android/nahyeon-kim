@@ -13,8 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
-import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.theme.DiveTheme
+import com.sopt.dive.data.UserPreferences
 import com.sopt.dive.presentation.home.navigation.Home
 import com.sopt.dive.presentation.home.navigation.homeNavGraph
 import com.sopt.dive.presentation.main.component.MainBottomBar
@@ -25,19 +25,22 @@ import com.sopt.dive.presentation.search.navigation.searchNavGraph
 import com.sopt.dive.presentation.signin.navigation.SignIn
 import com.sopt.dive.presentation.signin.navigation.signInNavGraph
 import com.sopt.dive.presentation.signup.navigation.signUpNavGraph
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var userPrefs: UserPreferences
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        userPrefs = UserPreferences(this)
-
         setContent {
             DiveTheme {
-                val startDestination = if (userPrefs.isLoggedIn()) Home else SignIn
+                val startDestination = if (userPreferences.isLoggedIn()) Home else SignIn
                 val appState = rememberMainAppState(startDestination = startDestination)
 
                 MainScreen(appState = appState)
@@ -72,7 +75,6 @@ fun MainScreen(
             navController = appState.navController,
             startDestination = appState.startDestination,
             modifier = Modifier.fillMaxSize()
-
         ) {
             signInNavGraph(
                 navigateToHome = appState::navigateToHome,

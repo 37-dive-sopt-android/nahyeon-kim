@@ -20,28 +20,38 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.R
-import com.sopt.dive.core.data.UserPreferences
 import com.sopt.dive.core.designsystem.component.SoptBasicButton
 import com.sopt.dive.core.designsystem.component.item.InfoItem
 import com.sopt.dive.core.designsystem.theme.DiveTheme
 import com.sopt.dive.core.util.UiState
+import com.sopt.dive.core.util.collectSideEffect
 
 @Composable
 fun MyPageRoute(
     paddingValues: PaddingValues,
     onLogout: () -> Unit,
-    viewModel: MyPageViewModel = viewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val userPrefs = UserPreferences(context)
-    val userId = userPrefs.getUserId()
 
-    LaunchedEffect(userId) {
-        viewModel.loadUserInfo(userId)
+    viewModel.sideEffect.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is MyPageSideEffect.ShowToast -> {
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            }
+
+            is MyPageSideEffect.NavigateToSignIn -> {
+                onLogout()
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadUserInfo()
     }
 
     when (uiState) {
@@ -52,22 +62,13 @@ fun MyPageRoute(
                 name = data.name,
                 email = data.email,
                 age = data.age,
-                onLogout = {
-                    userPrefs.signOut()
-                    onLogout()
-                },
+                onLogout = viewModel::signOut,
                 modifier = Modifier.padding(paddingValues)
             )
         }
-        is UiState.Failure -> {
-            LaunchedEffect(Unit) {
-                Toast.makeText(
-                    context,
-                    "사용자 정보를 불러오는데 실패했습니다.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+
+        is UiState.Failure -> {}
+
         else -> {}
     }
 }
